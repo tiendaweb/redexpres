@@ -271,12 +271,48 @@ button,
 
 @media (max-width: 768px) {
   #sidebar {
-    width: 0;
-    padding: 0;
+    position: fixed;
+    width: 100%;
+    height: auto;
+    left: 0;
+    top: auto;
+    bottom: 0;
+    border-right: none;
+    border-top: 1px solid var(--border-glass);
+    flex-direction: row;
+    padding: 8px 12px;
+    gap: 4px;
+    z-index: var(--z-sidebar);
+  }
+
+  .nav-logo {
+    display: none;
+  }
+
+  .nav-btn {
+    width: 48px;
+    height: 48px;
+    flex: 1;
+    max-width: 60px;
+  }
+
+  .nav-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .nav-btn.active::before {
+    display: none;
+  }
+
+  .nav-btn.active {
+    background: var(--bg-glass);
+    color: var(--cyan);
   }
 
   #main {
     margin-left: 0;
+    margin-bottom: 90px;
     padding: var(--spacing-lg);
   }
 
