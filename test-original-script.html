@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniStock FTTH — Sistema de Gestión de Inventario</title>
+
+  <!-- CSS Styles -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/glass-design.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/icons.css">
+
+  <!-- Bootstrap Icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <style>
+    /* Base styles from original */
+    #sidebar {
+      position: fixed; left: 0; top: 0; bottom: 0;
+      width: 68px; z-index: 100;
+      background: rgba(8,12,18,0.92);
+      border-right: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(20px);
+      display: flex; flex-direction: column; align-items: center;
+      padding: 20px 0; gap: 8px;
+    }
+
+    .nav-logo {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--cyan), rgba(0,255,163,0.6));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px;
+      color: #080c12; margin-bottom: 20px;
+    }
+
+    .nav-btn {
+      width: 44px; height: 44px; border-radius: 12px; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent; color: var(--text-muted); transition: all 0.2s;
+      font-size: 18px; position: relative;
+    }
+    .nav-btn:hover, .nav-btn.active {
+      background: rgba(255,255,255,0.04); color: var(--cyan);
+      border: 1px solid rgba(0,229,255,0.2);
+      box-shadow: 0 0 12px rgba(0,229,255,0.1);
+    }
+    .nav-btn.active::before {
+      content: ''; position: absolute; left: -2px; top: 50%; transform: translateY(-50%);
+      width: 3px; height: 24px; background: var(--cyan); border-radius: 0 3px 3px 0;
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    #main {
+      margin-left: 68px;
+      padding: 24px;
+      position: relative; z-index: 1;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+
+    .stock-card {
+      padding: 22px; position: relative; overflow: hidden;
+    }
+    .stock-card::after {
+      content: ''; position: absolute; top: -30px; right: -30px;
+      width: 100px; height: 100px; border-radius: 50%;
+      opacity: 0.06; pointer-events: none;
+    }
+    .stock-card.cyan-card::after { background: var(--cyan); }
+    .stock-card.emerald-card::after { background: var(--emerald); }
+    .stock-card.red-card::after { background: var(--red); }
+    .stock-card.amber-card::after { background: var(--amber); }
+
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      text-align: left; padding: 10px 14px;
+      font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-dim); font-family: 'Space Mono', monospace;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-weight: 700;
+    }
+    .data-table td {
+      padding: 12px 14px; font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .drop-zone {
+      border: 2px dashed rgba(0,229,255,0.2); border-radius: 20px;
+      padding: 40px; text-align: center; cursor: pointer;
+      transition: all 0.3s; position: relative; overflow: hidden;
+      background: rgba(0,229,255,0.02);
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: rgba(0,229,255,0.5);
+      background: rgba(0,229,255,0.05);
+      box-shadow: 0 0 30px rgba(0,229,255,0.08);
+    }
+
+    .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+    .tab-btn {
+      padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer;
+      font-size: 12px; font-family: 'Space Mono', monospace; transition: all 0.2s;
+      background: transparent; color: var(--text-muted); font-weight: 700;
+    }
+    .tab-btn.active {
+      background: rgba(0,229,255,0.1); color: var(--cyan);
+      border: 1px solid rgba(0,229,255,0.2);
+    }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .stock-card.glass { margin-bottom: 16px; }
+
+    .progress-track {
+      height: 4px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden;
+    }
+    .progress-fill { height: 100%; border-radius: 99px; transition: width 1s ease; }
+    .fill-cyan { background: linear-gradient(90deg, var(--cyan), rgba(0,229,255,0.4)); }
+    .fill-emerald { background: linear-gradient(90deg, var(--emerald), rgba(0,255,163,0.4)); }
+    .fill-red { background: linear-gradient(90deg, var(--red), rgba(255,59,107,0.4)); }
+    .fill-amber { background: linear-gradient(90deg, var(--amber), rgba(255,176,32,0.4)); }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .dot-cyan { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+    .dot-emerald { background: var(--emerald); box-shadow: 0 0 8px var(--emerald); }
+    .dot-red { background: var(--red); box-shadow: 0 0 8px var(--red); animation: blink 1.4s ease-in-out infinite; }
+    .dot-amber { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .tecnico-avatar {
+      width: 40px; height: 40px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      display: flex; align-items: center; justify-content: center;
+      color: #080c12; font-weight: 700; font-size: 14px;
+    }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 10px; border-radius: 999px; font-size: 11px;
+      font-family: 'Space Mono', monospace; font-weight: 700; letter-spacing: 0.05em;
+    }
+    .badge-cyan { background: rgba(0,229,255,0.15); color: var(--cyan); border: 1px solid rgba(0,229,255,0.25); }
+    .badge-emerald { background: rgba(0,255,163,0.12); color: var(--emerald); border: 1px solid rgba(0,255,163,0.25); }
+    .badge-red { background: rgba(255,59,107,0.15); color: var(--red); border: 1px solid rgba(255,59,107,0.25); }
+    .badge-amber { background: rgba(255,176,32,0.15); color: var(--amber); border: 1px solid rgba(255,176,32,0.25); }
+
+    .status-ok { background: rgba(0,255,163,0.15); color: var(--emerald); border: 1px solid rgba(0,255,163,0.25); padding: 3px 8px; border-radius: 5px; }
+    .status-warn { background: rgba(255,176,32,0.15); color: var(--amber); border: 1px solid rgba(255,176,32,0.25); padding: 3px 8px; border-radius: 5px; }
+    .status-crit { background: rgba(255,59,107,0.15); color: var(--red); border: 1px solid rgba(255,59,107,0.25); padding: 3px 8px; border-radius: 5px; }
+
+    .font-mono { font-family: 'Space Mono', monospace; }
+    .text-red { color: var(--red); }
+    .text-amber { color: var(--amber); }
+    .text-emerald { color: var(--emerald); }
+    .text-cyan { color: var(--cyan); }
+    .text-muted { color: var(--text-muted); }
+
+    .glow-red { box-shadow: 0 0 20px rgba(255,59,107,0.18), inset 0 0 20px rgba(255,59,107,0.04); }
+    .glow-amber { box-shadow: 0 0 15px rgba(255,176,32,0.15), inset 0 0 15px rgba(255,176,32,0.03); }
+
+    #notif {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--bg-glass);
+      border: 1px solid rgba(0,229,255,0.2);
+      color: var(--text-primary);
+      padding: 16px 24px; border-radius: 12px;
+      display: flex; align-items: center; gap: 12px;
+      backdrop-filter: blur(16px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 900;
+    }
+    #notif.show { opacity: 1; pointer-events: auto; }
+
+    #modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+      z-index: 500;
+    }
+    #modal.visible {
+      opacity: 1; pointer-events: auto;
+    }
+    #modal .glass {
+      width: 90%; max-width: 500px;
+      padding: 28px;
+    }
+    #modal .glass h3 {
+      margin-bottom: 20px;
+    }
+    #modal .glass input,
+    #modal .glass select {
+      margin-bottom: 16px;
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+    #modal .glass button {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      color: #080c12; border: none; border-radius: 8px;
+      cursor: pointer; font-weight: 700; font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="nav-logo">O</div>
+    <button class="nav-btn active" onclick="showPage('dashboard')" title="Dashboard">
+      <i class="bi bi-graph-up"></i>
+    </button>
+    <button class="nav-btn" onclick="showPage('movimientos')" title="Movimientos">
+      <i class="bi bi-arrow-left-right"></i>
+    </button>
+    <button class="nav-btn" onclick="showPage('fibra')" title="Fibra">
+      <i class="bi bi-diagram-3"></i>
+    </button>
+    <button class="nav-btn" onclick="showPage('tecnicos')" title="Técnicos">
+      <i class="bi bi-person-badge"></i>
+    </button>
+    <button class="nav-btn" onclick="showPage('alertas')" title="Alertas">
+      <i class="bi bi-exclamation-triangle"></i>
+    </button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="main">
+    <!-- DASHBOARD PAGE -->
+    <div id="page-dashboard" class="page active">
+      <div class="topbar">
+        <h2 style="margin:0;color:var(--text-primary)">Stock — Inventario General</h2>
+      </div>
+
+      <div class="bento">
+        <!-- Cards Summary -->
+        <div class="col-3">
+          <div class="glass stock-card cyan-card">
+            <p style="font-size:12px;color:var(--text-muted);margin:0">Total SKUs</p>
+            <p class="font-mono" style="font-size:28px;font-weight:700;color:var(--cyan);margin:4px 0">25</p>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="glass stock-card emerald-card">
+            <p style="font-size:12px;color:var(--text-muted);margin:0">Stock OK</p>
+            <p class="font-mono" style="font-size:28px;font-weight:700;color:var(--emerald);margin:4px 0">17</p>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="glass stock-card amber-card">
+            <p style="font-size:12px;color:var(--text-muted);margin:0">Bajo Stock</p>
+            <p class="font-mono" style="font-size:28px;font-weight:700;color:var(--amber);margin:4px 0">6</p>
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="glass stock-card red-card">
+            <p style="font-size:12px;color:var(--text-muted);margin:0">Crítico</p>
+            <p class="font-mono" style="font-size:28px;font-weight:700;color:var(--red);margin:4px 0">2</p>
+          </div>
+        </div>
+
+        <!-- Stock Table -->
+        <div class="col-12">
+          <div class="glass" style="padding:22px">
+            <h4 style="margin-bottom:16px;margin-top:0">Materiales en Stock</h4>
+            <div class="tabs">
+              <button class="tab-btn active" onclick="filterTable('todos', this)">TODOS</button>
+              <button class="tab-btn" onclick="filterTable('nodo', this)">NODO</button>
+              <button class="tab-btn" onclick="filterTable('inst', this)">INSTALACIONES</button>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>CÓDIGO</th>
+                  <th>MATERIAL</th>
+                  <th>CATEGORÍA</th>
+                  <th>STOCK</th>
+                  <th>MÍNIMO</th>
+                  <th>ESTADO</th>
+                </tr>
+              </thead>
+              <tbody id="table-body">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Drop Zones -->
+        <div class="col-6">
+          <div class="glass" style="padding:28px;text-align:center">
+            <h4 style="margin:0 0 16px 0">📥 Ingresos</h4>
+            <div class="drop-zone" id="dz-ingreso">
+              <p style="color:var(--text-muted);margin:0">DROP PDF / CSV AQUÍ</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="glass" style="padding:28px;text-align:center">
+            <h4 style="margin:0 0 16px 0">📤 Egresos</h4>
+            <div class="drop-zone" id="dz-egreso">
+              <p style="color:var(--text-muted);margin:0">DROP PDF / CSV AQUÍ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOVIMIENTOS PAGE -->
+    <div id="page-movimientos" class="page">
+      <h2 style="margin-bottom:20px">Movimientos de Stock</h2>
+      <div id="movimientos-log"></div>
+    </div>
+
+    <!-- FIBRA PAGE -->
+    <div id="page-fibra" class="page">
+      <h2 style="margin-bottom:20px">Gestión de Fibra Óptica</h2>
+      <div class="bento">
+        <div class="col-6">
+          <div class="glass" style="padding:22px">
+            <h4 style="margin-top:0;margin-bottom:16px">Bobinas Disponibles</h4>
+            <div id="bobinas-list"></div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="glass" style="padding:22px">
+            <h4 style="margin-top:0;margin-bottom:16px">Calcular Consumo</h4>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <select id="fiber-type" onchange="calcFibra()" style="padding:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text-primary)">
+                <option value="12">F.O. 12 hilos</option>
+                <option value="24">F.O. 24 hilos</option>
+              </select>
+              <input type="number" id="fiber-desde" placeholder="Desde (m)" onchange="calcFibra()" style="padding:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text-primary)">
+              <input type="number" id="fiber-hasta" placeholder="Hasta (m)" onchange="calcFibra()" style="padding:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text-primary)">
+              <p style="font-size:14px;margin:8px 0">Consumo: <span class="text-red" id="fibra-resultado" style="font-size:18px;font-weight:700">0</span> m</p>
+              <p style="font-size:13px;margin:8px 0" id="fibra-nuevo-stock"></p>
+              <button onclick="aplicarFibra()" style="padding:12px;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#080c12;border:none;border-radius:8px;cursor:pointer;font-weight:700">Aplicar Consumo</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="glass" style="padding:22px">
+            <h4 style="margin-top:0;margin-bottom:16px">Historial de Consumo</h4>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>FECHA</th>
+                  <th>TIPO</th>
+                  <th>NODO</th>
+                  <th>DESDE</th>
+                  <th>HASTA</th>
+                  <th>CONSUMO</th>
+                  <th>TÉCNICO</th>
+                  <th>ESTADO</th>
+                </tr>
+              </thead>
+              <tbody id="fibra-historial">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TÉCNICOS PAGE -->
+    <div id="page-tecnicos" class="page">
+      <h2 style="margin-bottom:20px">Equipo de Técnicos</h2>
+      <div class="bento">
+        <div id="tecnicos-cards"></div>
+        <div class="col-12">
+          <div class="glass" style="padding:22px">
+            <h4 style="margin-top:0;margin-bottom:16px">Equipos Activos en Campo</h4>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>N.S.</th>
+                  <th>EQUIPO</th>
+                  <th>TÉCNICO</th>
+                  <th>CLIENTE</th>
+                  <th>ORDEN</th>
+                  <th>FECHA</th>
+                  <th>ESTADO</th>
+                </tr>
+              </thead>
+              <tbody id="ns-table">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERTAS PAGE -->
+    <div id="page-alertas" class="page">
+      <h2 style="margin-bottom:20px">Centro de Alertas</h2>
+      <div id="alertas-panel"></div>
+      <h3 style="margin-top:40px;margin-bottom:20px">Registro de Eventos</h3>
+      <div class="glass" style="padding:22px">
+        <div id="log-entries" style="max-height:400px;overflow-y:auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div id="notif">
+    <span id="notif-icon">✓</span>
+    <span id="notif-msg">Completado</span>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal">
+    <div class="glass">
+      <h3 style="margin-top:0">Agregar Material</h3>
+      <input type="text" id="new-codigo" placeholder="Código de artículo">
+      <input type="text" id="new-material" placeholder="Descripción del material">
+      <input type="number" id="new-cantidad" placeholder="Cantidad">
+      <select id="new-destino">
+        <option>Destino...</option>
+        <option>Nodo</option>
+        <option>Instalaciones</option>
+      </select>
+      <button onclick="addStock()" style="margin-top:16px">Agregar a Stock</button>
+      <button onclick="closeModal()" style="margin-top:8px;background:rgba(255,255,255,0.1);color:var(--text-primary)">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- ORIGINAL SCRIPT -->
+  <script src="SCRIPT-ORIGINAL.js"></script>
+
+  <!-- THEME TOGGLE LOGIC -->
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const html = document.documentElement;
+
+    // Check for saved theme preference or default to 'dark'
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    if (currentTheme === 'light') {
+      html.setAttribute('data-theme', 'light');
+      themeIcon.className = 'bi bi-sun';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeIcon.className = newTheme === 'light' ? 'bi bi-sun' : 'bi bi-moon-stars';
+    });
+  </script>
+</body>
+</html>

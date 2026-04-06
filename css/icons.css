@@ -1,0 +1,80 @@
+/* ============================================
+   ICONS STYLING
+   Bootstrap Icons CDN Customization
+   ============================================ */
+
+/* Icon base styling */
+.bi {
+  display: inline-block;
+  vertical-align: -0.125em;
+  fill: currentColor;
+  transition: all var(--transition-fast);
+}
+
+/* Sidebar icons */
+.sidebar-item .bi {
+  font-size: 1.25rem;
+  color: inherit;
+}
+
+.sidebar-item:hover .bi,
+.sidebar-item.active .bi {
+  color: var(--cyan);
+}
+
+/* Navbar icons */
+.navbar .bi {
+  font-size: 1.25rem;
+}
+
+/* Icon color variants */
+.icon-cyan { color: var(--cyan); }
+.icon-emerald { color: var(--emerald); }
+.icon-red { color: var(--red); }
+.icon-amber { color: var(--amber); }
+.icon-blue { color: var(--blue); }
+.icon-purple { color: var(--purple); }
+
+/* Icon sizes */
+.icon-sm { font-size: 1rem; }
+.icon-md { font-size: 1.25rem; }
+.icon-lg { font-size: 1.5rem; }
+.icon-xl { font-size: 2rem; }
+
+/* Icon animations */
+.icon-spin {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.icon-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Icon hover effects */
+.icon-hover:hover {
+  transform: translateY(-2px);
+}
+
+/* Icon button styling */
+button .bi {
+  transition: all var(--transition-fast);
+}
+
+button:hover .bi {
+  color: var(--cyan);
+  transform: scale(1.1);
+}
+
+button:active .bi {
+  transform: scale(0.95);
+}

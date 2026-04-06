@@ -16,8 +16,8 @@
 
   --text-primary: #e8edf5;
   --text-secondary: #b4bcc8;
-  --text-muted: rgba(232, 237, 245, 0.45);
-  --text-dim: rgba(232, 237, 245, 0.25);
+  --text-muted: rgba(232, 237, 245, 0.65);
+  --text-dim: rgba(232, 237, 245, 0.45);
 
   /* Color Palette */
   --cyan: #00e5ff;
@@ -106,9 +106,9 @@
   --border-secondary: rgba(0, 0, 0, 0.04);
 
   --text-primary: #1a202c;
-  --text-secondary: #4a5568;
-  --text-muted: rgba(26, 32, 44, 0.6);
-  --text-dim: rgba(26, 32, 44, 0.4);
+  --text-secondary: #374151;
+  --text-muted: rgba(26, 32, 44, 0.75);
+  --text-dim: rgba(26, 32, 44, 0.55);
 
   /* Color Palette - Light */
   --cyan: #0891b2;
