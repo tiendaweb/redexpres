@@ -1,0 +1,151 @@
+/* ============================================
+   VARIABLES GLOBALES - EXPRESS
+   Light & Dark Mode Support
+   ============================================ */
+
+:root {
+  /* DARK MODE (Default) */
+  --bg-base: #080c12;
+  --bg-panel: rgba(12, 18, 28, 0.85);
+  --bg-secondary: rgba(20, 28, 42, 0.6);
+  --bg-hover: rgba(255, 255, 255, 0.08);
+  --bg-input: rgba(255, 255, 255, 0.04);
+
+  --border-primary: rgba(255, 255, 255, 0.08);
+  --border-secondary: rgba(255, 255, 255, 0.04);
+
+  --text-primary: #e8edf5;
+  --text-secondary: #b4bcc8;
+  --text-muted: rgba(232, 237, 245, 0.45);
+  --text-dim: rgba(232, 237, 245, 0.25);
+
+  /* Color Palette */
+  --cyan: #00e5ff;
+  --cyan-dim: rgba(0, 229, 255, 0.15);
+  --cyan-light: rgba(0, 229, 255, 0.25);
+
+  --emerald: #00ffa3;
+  --emerald-dim: rgba(0, 255, 163, 0.12);
+  --emerald-light: rgba(0, 255, 163, 0.2);
+
+  --red: #ff3b6b;
+  --red-dim: rgba(255, 59, 107, 0.15);
+  --red-light: rgba(255, 59, 107, 0.2);
+
+  --amber: #ffb020;
+  --amber-dim: rgba(255, 176, 32, 0.15);
+  --amber-light: rgba(255, 176, 32, 0.2);
+
+  --blue: #0ea5e9;
+  --blue-dim: rgba(14, 165, 233, 0.15);
+
+  --purple: #a78bfa;
+  --purple-dim: rgba(167, 139, 250, 0.15);
+
+  --lime: #84cc16;
+  --lime-dim: rgba(132, 204, 22, 0.15);
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  /* Typography Sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.18);
+  --shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.25);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 300ms ease;
+  --transition-slow: 500ms ease;
+
+  /* Z-index */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-notification: 800;
+}
+
+/* LIGHT MODE */
+[data-theme="light"] {
+  --bg-base: #f5f7fa;
+  --bg-panel: rgba(255, 255, 255, 0.95);
+  --bg-secondary: rgba(241, 245, 250, 0.6);
+  --bg-hover: rgba(0, 0, 0, 0.04);
+  --bg-input: rgba(0, 0, 0, 0.02);
+
+  --border-primary: rgba(0, 0, 0, 0.08);
+  --border-secondary: rgba(0, 0, 0, 0.04);
+
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-muted: rgba(26, 32, 44, 0.6);
+  --text-dim: rgba(26, 32, 44, 0.4);
+
+  /* Color Palette - Light */
+  --cyan: #0891b2;
+  --cyan-dim: rgba(8, 145, 178, 0.12);
+  --cyan-light: rgba(8, 145, 178, 0.2);
+
+  --emerald: #059669;
+  --emerald-dim: rgba(5, 150, 105, 0.12);
+  --emerald-light: rgba(5, 150, 105, 0.2);
+
+  --red: #dc2626;
+  --red-dim: rgba(220, 38, 38, 0.12);
+  --red-light: rgba(220, 38, 38, 0.2);
+
+  --amber: #d97706;
+  --amber-dim: rgba(217, 119, 6, 0.12);
+  --amber-light: rgba(217, 119, 6, 0.2);
+
+  --blue: #2563eb;
+  --blue-dim: rgba(37, 99, 235, 0.12);
+
+  --purple: #9333ea;
+  --purple-dim: rgba(147, 51, 234, 0.12);
+
+  --lime: #65a30d;
+  --lime-dim: rgba(101, 163, 13, 0.12);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
+
+/* Font Families */
+--font-sans: 'Inter', sans-serif;
+--font-display: 'Syne', sans-serif;
+--font-mono: 'Space Mono', monospace;
