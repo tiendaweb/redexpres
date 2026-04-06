@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="css/glass-design.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/icons.css">
+
+  <!-- Bootstrap Icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
   <!-- Favicons -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='90' font-size='90' fill='%2300e5ff'>E</text></svg>">
@@ -26,49 +30,49 @@
 
     <nav style="display: flex; flex-direction: column; gap: 0;">
       <a href="#dashboard" class="sidebar-item active" data-route="dashboard" title="Dashboard">
-        <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">📊</span>
+        <i class="bi bi-graph-up" style="font-size: 1.25rem;"></i>
         <span class="sidebar-label" style="font-size: 0.85rem;">Dashboard</span>
       </a>
 
       <a href="#ordenes" class="sidebar-item" data-route="ordenes" title="Órdenes">
-        <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">📋</span>
+        <i class="bi bi-clipboard-list" style="font-size: 1.25rem;"></i>
         <span class="sidebar-label" style="font-size: 0.85rem;">Órdenes</span>
       </a>
 
       <a href="#inventario" class="sidebar-item" data-route="inventario" title="Inventario">
-        <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">📦</span>
+        <i class="bi bi-box" style="font-size: 1.25rem;"></i>
         <span class="sidebar-label" style="font-size: 0.85rem;">Inventario</span>
       </a>
 
       <a href="#clientes" class="sidebar-item" data-route="clientes" title="Clientes">
-        <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">👥</span>
+        <i class="bi bi-people" style="font-size: 1.25rem;"></i>
         <span class="sidebar-label" style="font-size: 0.85rem;">Clientes</span>
       </a>
 
       <a href="#empleados" class="sidebar-item" data-route="empleados" title="Empleados">
-        <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">👨‍💼</span>
+        <i class="bi bi-person-badge" style="font-size: 1.25rem;"></i>
         <span class="sidebar-label" style="font-size: 0.85rem;">Empleados</span>
       </a>
 
       <a href="#reportes" class="sidebar-item" data-route="reportes" title="Reportes">
-        <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">📈</span>
+        <i class="bi bi-bar-chart" style="font-size: 1.25rem;"></i>
         <span class="sidebar-label" style="font-size: 0.85rem;">Reportes</span>
       </a>
 
       <a href="#admin" class="sidebar-item" data-route="admin" title="Administración">
-        <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">⚙️</span>
+        <i class="bi bi-gear" style="font-size: 1.25rem;"></i>
         <span class="sidebar-label" style="font-size: 0.85rem;">Admin</span>
       </a>
     </nav>
 
     <div style="margin-top: auto; padding-top: var(--spacing-lg); border-top: 1px solid var(--border-primary);">
       <button class="sidebar-item" id="theme-toggle" title="Cambiar tema">
-        <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;" id="theme-icon">🌙</span>
+        <i class="bi bi-moon-stars" style="font-size: 1.25rem;" id="theme-icon"></i>
         <span class="sidebar-label" style="font-size: 0.85rem;">Tema</span>
       </button>
 
       <button class="sidebar-item" title="Cerrar sesión">
-        <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">🚪</span>
+        <i class="bi bi-box-arrow-left" style="font-size: 1.25rem;"></i>
         <span class="sidebar-label" style="font-size: 0.85rem;">Salir</span>
       </button>
     </div>
@@ -85,8 +89,8 @@
 
       <div style="display: flex; align-items: center; gap: 1rem; padding-left: 1rem; border-left: 1px solid var(--border-primary);">
         <div style="position: relative;">
-          <button style="background: none; border: none; cursor: pointer; color: var(--text-primary); font-size: 1.5rem; position: relative;">
-            🔔
+          <button style="background: none; border: none; cursor: pointer; color: var(--text-primary); position: relative;">
+            <i class="bi bi-bell" style="font-size: 1.25rem;"></i>
             <span style="position: absolute; top: -5px; right: -5px; background: var(--red); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">3</span>
           </button>
         </div>
