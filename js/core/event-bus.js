@@ -1,76 +1,78 @@
 /**
- * Event Bus - Bus de eventos global
- * Permite comunicación desacoplada entre módulos
+ * Event Bus
+ * Decoupled communication between modules
  */
-
 const EventBus = (() => {
-  const listeners = {};
+  const events = {};
 
-  // Escuchar evento
-  const on = (evento, callback) => {
-    if (!listeners[evento]) {
-      listeners[evento] = [];
+  /**
+   * Subscribe to an event
+   * @param {string} eventName - Name of the event
+   * @param {function} callback - Function to call when event is triggered
+   */
+  const on = (eventName, callback) => {
+    if (!events[eventName]) {
+      events[eventName] = [];
     }
-    listeners[evento].push(callback);
+    events[eventName].push(callback);
 
-    // Retornar función para desuscribirse
+    // Return unsubscribe function
     return () => {
-      const index = listeners[evento].indexOf(callback);
-      if (index > -1) {
-        listeners[evento].splice(index, 1);
-      }
+      events[eventName] = events[eventName].filter(cb => cb !== callback);
     };
   };
 
-  // Escuchar evento una sola vez
-  const once = (evento, callback) => {
-    const wrapper = (data) => {
-      callback(data);
+  /**
+   * Subscribe to an event once
+   * @param {string} eventName - Name of the event
+   * @param {function} callback - Function to call when event is triggered
+   */
+  const once = (eventName, callback) => {
+    const unsubscribe = on(eventName, (...args) => {
+      callback(...args);
       unsubscribe();
-    };
-
-    const unsubscribe = on(evento, wrapper);
-    return unsubscribe;
+    });
   };
 
-  // Emitir evento
-  const emit = (evento, datos = null) => {
-    if (listeners[evento]) {
-      listeners[evento].forEach(callback => {
-        try {
-          callback(datos);
-        } catch (error) {
-          console.error(`Error en evento ${evento}:`, error);
-        }
-      });
-    }
+  /**
+   * Emit an event
+   * @param {string} eventName - Name of the event
+   * @param {*} data - Data to pass to listeners
+   */
+  const emit = (eventName, data = null) => {
+    if (!events[eventName]) return;
+
+    events[eventName].forEach(callback => {
+      try {
+        callback(data);
+      } catch (e) {
+        console.error(`Error in event listener for ${eventName}:`, e);
+      }
+    });
   };
 
-  // Desuscribirse
-  const off = (evento, callback) => {
-    if (listeners[evento]) {
-      listeners[evento] = listeners[evento].filter(cb => cb !== callback);
-    }
-  };
-
-  // Limpiar todos los listeners
-  const clear = (evento) => {
-    if (evento) {
-      delete listeners[evento];
+  /**
+   * Remove all listeners for an event
+   * @param {string} eventName - Name of the event (optional)
+   */
+  const off = (eventName) => {
+    if (eventName) {
+      delete events[eventName];
     } else {
-      Object.keys(listeners).forEach(e => delete listeners[e]);
+      Object.keys(events).forEach(key => delete events[key]);
     }
   };
+
+  /**
+   * Get all events
+   */
+  const getEvents = () => Object.keys(events);
 
   return {
     on,
     once,
     emit,
     off,
-    clear
+    getEvents,
   };
 })();
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = EventBus;
-}

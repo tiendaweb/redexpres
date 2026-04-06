@@ -1,143 +1,127 @@
 /**
- * Dashboard Module - Panel principal con KPIs y estadísticas
+ * Dashboard Module
+ * Main dashboard with KPIs, inventory table, and alerts panel
  */
 
 const DashboardModule = (() => {
+  let currentFilter = 'todos';
+
   const render = (container) => {
-    const stats = StateManager.getState('estadisticas');
-    const alertas = StateManager.getState('alertas');
-    const ordenes = StateManager.getState('ordenes');
-
-    // HTML
     const html = `
-      <div style="display: flex; flex-direction: column; gap: var(--spacing-xl);">
-        <!-- Títulogeo -->
-        <div>
-          <h1 style="font-size: 2.5rem; margin-bottom: var(--spacing-md);">Dashboard</h1>
-          <p style="color: var(--text-muted);">Bienvenido al sistema de gestión Express</p>
+      <div class="bento">
+        <!-- Main inventory section -->
+        <div class="glass col-8 fade-up delay-2" style="padding: 24px">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px">
+            <div>
+              <h2 class="font-display" style="font-size: 16px; font-weight: 700; margin-bottom: 4px">Inventario de Materiales</h2>
+              <p class="text-muted" style="font-size: 12px">Valores en tiempo real · Actualizado ahora</p>
+            </div>
+            <div class="tabs" style="margin-bottom: 0">
+              <button class="tab-btn active" onclick="DashboardModule.filterTable('todos', this)">Todos</button>
+              <button class="tab-btn" onclick="DashboardModule.filterTable('nodo', this)">Nodo</button>
+              <button class="tab-btn" onclick="DashboardModule.filterTable('inst', this)">Instalación</button>
+            </div>
+          </div>
+          <table class="data-table" id="main-table">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Material</th>
+                <th>Categoría</th>
+                <th>Stock</th>
+                <th>Mínimo</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+            </tbody>
+          </table>
         </div>
 
-        <!-- KPI Cards -->
-        <div class="grid grid-4">
-          <!-- KPI: Órdenes -->
-          <div class="card glass glow-cyan">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div>
-                <small style="color: var(--text-muted);">ÓRDENES TOTALES</small>
-                <div style="font-size: 2.5rem; font-weight: 700; color: var(--cyan); margin-top: 0.5rem;">${stats.ordenesTotales}</div>
-              </div>
-              <div style="font-size: 3rem;">📋</div>
+        <!-- Sidebar panel: Alerts -->
+        <div class="col-4 fade-up delay-3" style="display: flex; flex-direction: column; gap: 16px">
+          <!-- Critical alerts -->
+          <div class="glass" style="padding: 22px; flex: 1">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px">
+              <h3 class="font-display" style="font-size: 14px; font-weight: 700">Alertas Críticas</h3>
+              <span class="badge badge-red" id="alertas-count">5 activas</span>
             </div>
-            <div style="display: flex; gap: 0.5rem; margin-top: var(--spacing-lg); font-size: 0.85rem;">
-              <span class="badge badge-emerald">${stats.ordenesCompletadas} completadas</span>
-              <span class="badge badge-amber">${stats.ordenesPendientes} pendientes</span>
+            <div id="alertas-panel" style="display: flex; flex-direction: column; gap: 8px">
             </div>
-          </div>
-
-          <!-- KPI: Inventario -->
-          <div class="card glass glow-emerald">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div>
-                <small style="color: var(--text-muted);">ÍTEMS DE INVENTARIO</small>
-                <div style="font-size: 2.5rem; font-weight: 700; color: var(--emerald); margin-top: 0.5rem;">${stats.inventarioItems}</div>
-              </div>
-              <div style="font-size: 3rem;">📦</div>
-            </div>
-            <div style="display: flex; gap: 0.5rem; margin-top: var(--spacing-lg); font-size: 0.85rem;">
-              <span class="badge badge-red">${stats.itemsBajoStock} bajo stock</span>
-            </div>
-          </div>
-
-          <!-- KPI: Técnicos -->
-          <div class="card glass glow-blue">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div>
-                <small style="color: var(--text-muted);">TÉCNICOS DISPONIBLES</small>
-                <div style="font-size: 2.5rem; font-weight: 700; color: var(--blue); margin-top: 0.5rem;">${stats.tecnicosDisponibles}</div>
-              </div>
-              <div style="font-size: 3rem;">👨‍💼</div>
-            </div>
-            <div style="margin-top: var(--spacing-lg); font-size: 0.85rem;">
-              <span class="badge badge-cyan">En servicio</span>
-            </div>
-          </div>
-
-          <!-- KPI: Clientes -->
-          <div class="card glass glow-purple">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div>
-                <small style="color: var(--text-muted);">CLIENTES ACTIVOS</small>
-                <div style="font-size: 2.5rem; font-weight: 700; color: var(--purple); margin-top: 0.5rem;">${stats.clientesActivos}</div>
-              </div>
-              <div style="font-size: 3rem;">👥</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Alertas -->
-        ${alertas.length > 0 ? `
-          <div class="card glass">
-            <h3 style="margin-bottom: var(--spacing-lg);">⚠️ Alertas Críticas</h3>
-            <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
-              ${alertas.slice(0, 3).map(alerta => `
-                <div style="padding: var(--spacing-md); background: ${alerta.nivel === 'critico' ? 'var(--red-dim)' : 'var(--amber-dim)'}; border-radius: var(--radius-md); border-left: 3px solid ${alerta.nivel === 'critico' ? 'var(--red)' : 'var(--amber)'};">
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                      <strong style="color: ${alerta.nivel === 'critico' ? 'var(--red)' : 'var(--amber)'};">${alerta.material}</strong>
-                      <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-secondary);">${alerta.accion}</p>
-                    </div>
-                    <span class="badge ${alerta.nivel === 'critico' ? 'badge-red' : 'badge-amber'}">Stock: ${alerta.stockActual}</span>
-                  </div>
-                </div>
-              \`).join('')}
-            </div>
-          </div>
-        ` : ''}
-
-        <!-- Órdenes Recientes -->
-        <div class="card glass">
-          <h3 style="margin-bottom: var(--spacing-lg);">Órdenes Recientes</h3>
-          <div style="overflow-x: auto;">
-            <table style="width: 100%; font-size: 0.9rem;">
-              <thead style="background: var(--bg-secondary);">
-                <tr>
-                  <th style="padding: var(--spacing-md); text-align: left;">Orden</th>
-                  <th style="padding: var(--spacing-md); text-align: left;">Cliente</th>
-                  <th style="padding: var(--spacing-md); text-align: left;">Técnico</th>
-                  <th style="padding: var(--spacing-md); text-align: center;">Estado</th>
-                  <th style="padding: var(--spacing-md); text-align: center;">Prioridad</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${ordenes.slice(0, 5).map(orden => `
-                  <tr style="border-bottom: 1px solid var(--border-secondary);">
-                    <td style="padding: var(--spacing-md);"><strong>${orden.id}</strong></td>
-                    <td style="padding: var(--spacing-md);">${orden.cliente.nombre}</td>
-                    <td style="padding: var(--spacing-md);">${orden.tecnico.nombre}</td>
-                    <td style="padding: var(--spacing-md); text-align: center;">${Formatters.status(orden.estado)}</td>
-                    <td style="padding: var(--spacing-md); text-align: center;">
-                      <span class="badge badge-${orden.prioridad === 'alta' ? 'red' : orden.prioridad === 'normal' ? 'amber' : 'cyan'}">${orden.prioridad}</span>
-                    </td>
-                  </tr>
-                \`).join('')}
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
     `;
 
     container.innerHTML = html;
+    renderTable('todos');
+    renderAlertas();
+    attachEventListeners();
+  };
 
-    // Actualizar título de página
-    document.getElementById('page-title').textContent = 'Dashboard';
+  const getEstadoClass = (stock, min) => {
+    const ratio = stock / min;
+    if (ratio < 0.5) return 'status-crit';
+    if (ratio < 1) return 'status-warn';
+    return 'status-ok';
+  };
+
+  const getEstadoLabel = (stock, min) => {
+    const ratio = stock / min;
+    if (ratio < 0.5) return 'CRÍTICO';
+    if (ratio < 1) return 'BAJO';
+    return 'OK';
+  };
+
+  const renderTable = (filter) => {
+    const data = filter === 'todos' ? MockData.stockData : MockData.stockData.filter(d => d.cat === filter);
+    const tbody = document.getElementById('table-body');
+    
+    tbody.innerHTML = data.map(d => `
+      <tr>
+        <td><span class="font-mono" style="font-size: 12px; color: var(--text-muted)">${d.codigo}</span></td>
+        <td style="font-weight: 500; color: var(--text-primary)">${d.material}</td>
+        <td><span class="badge ${d.cat === 'nodo' ? 'badge-cyan' : 'badge-emerald'}" style="font-size: 10px">${d.cat.toUpperCase()}</span></td>
+        <td><span class="font-mono" style="font-size: 15px; font-weight: 700; color: ${d.stock < d.min ? 'var(--red)' : 'var(--text-primary)'}">${d.stock}</span> <span style="font-size: 11px; color: var(--text-muted)">${d.unidad}</span></td>
+        <td><span class="font-mono" style="font-size: 12px; color: var(--text-muted)">${d.min} ${d.unidad}</span></td>
+        <td><span class="chip ${getEstadoClass(d.stock, d.min)}" style="font-size: 10px; padding: 4px 10px; border-radius: 5px">${getEstadoLabel(d.stock, d.min)}</span></td>
+      </tr>
+    `).join('');
+  };
+
+  const renderAlertas = () => {
+    const alertasPanel = document.getElementById('alertas-panel');
+    const alertasHTML = MockData.alertasData.map(a => `
+      <div class="glass alert-item" style="padding: 16px; border-left: 3px solid ${a.nivel === 'crit' ? 'var(--red)' : 'var(--amber)'}">
+        <span class="dot ${a.nivel === 'crit' ? 'dot-red' : 'dot-amber'}" style="flex-shrink: 0"></span>
+        <div style="flex: 1">
+          <p style="font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text-primary)">${a.material}</p>
+          <p style="font-size: 11px; color: var(--text-muted)">
+            Stock: <strong style="color: ${a.nivel === 'crit' ? 'var(--red)' : 'var(--amber)'}">${a.stock}</strong> ·
+            Mín: <strong>${a.min}</strong>
+          </p>
+          <p style="font-size: 10px; color: var(--text-dim); margin-top: 4px">${a.accion}</p>
+        </div>
+        <span class="badge ${a.nivel === 'crit' ? 'badge-red' : 'badge-amber'}">${a.nivel === 'crit' ? 'CRÍTICO' : 'BAJO'}</span>
+      </div>
+    `).join('');
+
+    if (alertasPanel) alertasPanel.innerHTML = alertasHTML;
+  };
+
+  const filterTable = (filter, btn) => {
+    currentFilter = filter;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTable(filter);
+  };
+
+  const attachEventListeners = () => {
+    // Event listeners if needed
   };
 
   return {
-    render
+    render,
+    filterTable,
   };
 })();
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = DashboardModule;
-}

@@ -1,81 +1,93 @@
 /**
- * App - Inicializador principal de la aplicación
+ * OmniStock Application
+ * Main application initializer
  */
 
-const App = (() => {
+const OmniStockApp = (() => {
+  const modules = {
+    dashboard: DashboardModule,
+    movimientos: MovimientosModule,
+    fibra: FibraModule,
+    tecnicos: TecnicosModule,
+    alertas: AlertasModule,
+  };
+
   const init = () => {
-    // 1. Inicializar tema
+    console.log('🚀 Initializing OmniStock FTTH Application...');
+
+    // Initialize core systems
     ThemeManager.init();
-
-    // 2. Cargar datos de ejemplo
-    MockData.loadToState();
-
-    // 3. Registrar módulos en router
-    Router.register('dashboard', DashboardModule);
-    Router.register('ordenes', OrdenesModule);
-    Router.register('inventario', InventarioModule);
-    Router.register('clientes', ClientesModule);
-    Router.register('empleados', EmpleadosModule);
-    Router.register('reportes', ReportesModule);
-    Router.register('admin', AdminModule);
-
-    // 4. Inicializar router
+    StateManager.init();
     Router.init();
 
-    // 5. Vincular botón de tema
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
+    // Setup theme toggle button
+    setupThemeToggle();
 
-    themeToggle.addEventListener('click', () => {
-      ThemeManager.toggle();
-      updateThemeIcon();
+    // Setup module rendering on route change
+    setupModuleRouting();
+
+    // Render initial page
+    renderModule('dashboard');
+
+    // Subscribe to route changes
+    Router.subscribe((route) => {
+      renderModule(route);
     });
 
-    // 6. Escuchar cambios de tema
-    window.addEventListener('theme-changed', (e) => {
-      updateThemeIcon();
-    });
-
-    // 7. Escuchar cambios de ruta
-    window.addEventListener('route-changed', (e) => {
-      console.log('Ruta cambiada a:', e.detail.ruta);
-    });
-
-    // 8. Suscribirse a cambios de estado
-    StateManager.subscribe('alertas', (alertas) => {
-      actualizarContadorAlertas(alertas.length);
-    });
-
-    // 9. Mostrar notificación de bienvenida
-    NotificationService.success('¡Bienvenido a Express!', 3000);
-
-    // Log de inicialización
-    console.log('✅ Express iniciado correctamente');
+    console.log('✅ OmniStock initialized successfully');
   };
 
-  const updateThemeIcon = () => {
-    const theme = ThemeManager.getCurrent();
-    const icon = document.getElementById('theme-icon');
-    icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+  const setupThemeToggle = () => {
+    const toggleBtn = document.getElementById('theme-toggle');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        ThemeManager.toggle();
+      });
+    }
   };
 
-  const actualizarContadorAlertas = (cantidad) => {
-    // TODO: Implementar actualización de contador de alertas
+  const setupModuleRouting = () => {
+    // Bind navigation buttons to modules
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const moduleOrder = ['dashboard', 'movimientos', 'fibra', 'tecnicos', 'alertas'];
+
+    navButtons.forEach((btn, index) => {
+      btn.addEventListener('click', () => {
+        const moduleName = moduleOrder[index];
+        Router.navigate(moduleName);
+      });
+    });
   };
 
-  // Esperar a que el DOM esté listo
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  const renderModule = (moduleName) => {
+    const module = modules[moduleName];
+    if (!module) {
+      console.warn(`Module ${moduleName} not found`);
+      return;
+    }
+
+    const mainContent = document.getElementById('main-content');
+    if (!mainContent) {
+      console.error('Main content container not found');
+      return;
+    }
+
+    // Clear and render module
+    mainContent.innerHTML = '';
+    module.render(mainContent);
+
+    // Log in state
+    StateManager.set('currentPage', moduleName);
+  };
 
   return {
-    init
+    init,
   };
 })();
 
-// Exportar para módulos
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = App;
+// Auto-initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', OmniStockApp.init);
+} else {
+  OmniStockApp.init();
 }

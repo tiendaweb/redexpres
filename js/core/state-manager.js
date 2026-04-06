@@ -1,205 +1,178 @@
 /**
- * State Manager - Gestión centralizada de estado
- * Proporciona un único punto de verdad para todos los datos
+ * State Manager
+ * Centralized state management for the application
  */
-
 const StateManager = (() => {
+  const STATE_STORAGE_KEY = 'omnistockstate';
+
   let state = {
-    // Módulo: Órdenes
-    ordenes: [],
-    ordenesFilter: {
-      estado: 'todas',
-      tecnico: null,
-      cliente: null,
-      fechaDesde: null,
-      fechaHasta: null
+    currentPage: 'dashboard',
+    dashboard: {
+      kpis: [],
+      inventory: [],
+      alerts: [],
     },
-
-    // Módulo: Inventario
-    inventario: [],
-    inventarioFilter: {
-      categoria: 'todas',
-      stock: 'todas', // todas, bajo, critico
-      busqueda: ''
+    movimientos: {
+      history: [],
+      filter: 'todos',
     },
-    alertas: [],
-
-    // Módulo: Clientes
-    clientes: [],
-    clientesFilter: {
-      estado: 'activos',
-      tipo: 'todos'
+    fibra: {
+      bobinas: [],
+      consumoHistory: [],
     },
-
-    // Módulo: Empleados/Técnicos
-    empleados: [],
-    empleadosFilter: {
-      estado: 'activos',
-      rol: 'todos',
-      disponible: null
+    tecnicos: {
+      tecnicos: [],
+      equipos: [],
     },
-
-    // Módulo: Fibra Óptica
-    fibra: [],
-
-    // UI State
-    ui: {
-      paginaActual: 'dashboard',
-      sidebarAbierto: true,
-      modalAbierto: false,
-      modalContent: null,
-      loading: false,
-      error: null,
-      notificaciones: []
+    alertas: {
+      items: [],
+      filter: 'todos',
     },
-
-    // Usuario
-    usuario: {
+    auditLog: [],
+    user: {
       id: null,
-      nombre: 'Usuario Demo',
-      rol: 'admin',
-      email: 'demo@express.com'
+      name: 'Usuario',
+      role: 'supervisor',
     },
-
-    // Estadísticas (generadas)
-    estadisticas: {
-      ordenesTotales: 0,
-      ordenesPendientes: 0,
-      ordenesEnProgreso: 0,
-      ordenesCompletadas: 0,
-      inventarioItems: 0,
-      itemsBajoStock: 0,
-      tecnicosDisponibles: 0,
-      clientesActivos: 0
-    }
   };
 
-  // Observadores
-  const observadores = {};
+  let listeners = {};
 
-  // Suscribirse a cambios de estado
-  const subscribe = (clave, callback) => {
-    if (!observadores[clave]) {
-      observadores[clave] = [];
-    }
-    observadores[clave].push(callback);
-
-    // Retornar función para desuscribirse
-    return () => {
-      const index = observadores[clave].indexOf(callback);
-      if (index > -1) {
-        observadores[clave].splice(index, 1);
+  /**
+   * Initialize state from localStorage or defaults
+   */
+  const init = () => {
+    try {
+      const saved = localStorage.getItem(STATE_STORAGE_KEY);
+      if (saved) {
+        state = { ...state, ...JSON.parse(saved) };
       }
+    } catch (e) {
+      console.warn('Failed to load saved state:', e);
+    }
+  };
+
+  /**
+   * Get state value by path
+   * @param {string} path - Dot notation path (e.g., 'dashboard.kpis')
+   */
+  const get = (path) => {
+    if (!path) return state;
+
+    return path.split('.').reduce((obj, key) => obj?.[key], state);
+  };
+
+  /**
+   * Set state value by path
+   * @param {string} path - Dot notation path
+   * @param {*} value - New value
+   */
+  const set = (path, value) => {
+    const keys = path.split('.');
+    const lastKey = keys.pop();
+    let obj = state;
+
+    // Navigate to parent object
+    for (const key of keys) {
+      obj[key] = obj[key] || {};
+      obj = obj[key];
+    }
+
+    obj[lastKey] = value;
+    save();
+    notify(path, value);
+  };
+
+  /**
+   * Update state object (shallow merge)
+   * @param {string} path - Dot notation path
+   * @param {object} updates - Object with properties to update
+   */
+  const update = (path, updates) => {
+    const current = get(path) || {};
+    set(path, { ...current, ...updates });
+  };
+
+  /**
+   * Save state to localStorage
+   */
+  const save = () => {
+    try {
+      localStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn('Failed to save state:', e);
+    }
+  };
+
+  /**
+   * Subscribe to state changes
+   * @param {string} path - Path to subscribe to (e.g., 'dashboard.kpis')
+   * @param {function} callback - Called with new value when changed
+   */
+  const subscribe = (path, callback) => {
+    if (!listeners[path]) {
+      listeners[path] = [];
+    }
+    listeners[path].push(callback);
+
+    // Return unsubscribe function
+    return () => {
+      listeners[path] = listeners[path].filter(l => l !== callback);
     };
   };
 
-  // Notificar a observadores
-  const notificar = (clave, valor) => {
-    if (observadores[clave]) {
-      observadores[clave].forEach(callback => callback(valor));
+  /**
+   * Notify all listeners of state change
+   */
+  const notify = (path, value) => {
+    if (listeners[path]) {
+      listeners[path].forEach(callback => callback(value));
     }
   };
 
-  // Obtener estado
-  const getState = (clave) => {
-    if (!clave) return state;
-    return state[clave];
-  };
-
-  // Actualizar estado (shallow merge)
-  const setState = (clave, valor) => {
-    if (typeof clave === 'object') {
-      // Si paso un objeto, hacer merge
-      state = { ...state, ...clave };
-      notificar(null, state);
-    } else {
-      state[clave] = valor;
-      notificar(clave, valor);
-    }
-  };
-
-  // Actualizar array (agregar/actualizar item)
-  const updateArray = (clave, item, idField = 'id') => {
-    const array = state[clave];
-    const index = array.findIndex(x => x[idField] === item[idField]);
-
-    if (index > -1) {
-      array[index] = { ...array[index], ...item };
-    } else {
-      array.push(item);
-    }
-
-    notificar(clave, [...array]);
-  };
-
-  // Eliminar item de array
-  const removeFromArray = (clave, id, idField = 'id') => {
-    const array = state[clave];
-    const filtered = array.filter(x => x[idField] !== id);
-    state[clave] = filtered;
-    notificar(clave, [...filtered]);
-  };
-
-  // Actualizar estadísticas
-  const updateEstadisticas = () => {
-    const stats = {
-      ordenesTotales: state.ordenes.length,
-      ordenesPendientes: state.ordenes.filter(o => o.estado === 'pendiente').length,
-      ordenesEnProgreso: state.ordenes.filter(o => o.estado === 'en-progreso').length,
-      ordenesCompletadas: state.ordenes.filter(o => o.estado === 'completada').length,
-      inventarioItems: state.inventario.length,
-      itemsBajoStock: state.inventario.filter(i => i.stock < i.stockMinimo).length,
-      tecnicosDisponibles: state.empleados.filter(e => e.disponible && e.estado === 'activo').length,
-      clientesActivos: state.clientes.filter(c => c.estado === 'activo').length
+  /**
+   * Add audit log entry
+   */
+  const addAuditLog = (action, details = {}) => {
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      user: state.user.name,
+      action,
+      details,
     };
 
-    state.estadisticas = stats;
-    notificar('estadisticas', stats);
-  };
+    state.auditLog.push(logEntry);
 
-  // Agregar notificación
-  const addNotification = (mensaje, tipo = 'info', duracion = 3000) => {
-    const id = Date.now();
-    const notif = { id, mensaje, tipo, duracion };
-
-    state.ui.notificaciones.push(notif);
-    notificar('notificaciones', state.ui.notificaciones);
-
-    // Auto-remover después de duracion
-    if (duracion) {
-      setTimeout(() => {
-        removeNotification(id);
-      }, duracion);
+    // Keep only last 1000 entries
+    if (state.auditLog.length > 1000) {
+      state.auditLog = state.auditLog.slice(-1000);
     }
 
-    return id;
+    save();
   };
 
-  // Remover notificación
-  const removeNotification = (id) => {
-    state.ui.notificaciones = state.ui.notificaciones.filter(n => n.id !== id);
-    notificar('notificaciones', state.ui.notificaciones);
-  };
-
-  // Limpiar estado
-  const reset = () => {
-    state = { ...state };
-    notificar(null, state);
+  /**
+   * Clear all state
+   */
+  const clear = () => {
+    localStorage.removeItem(STATE_STORAGE_KEY);
+    location.reload();
   };
 
   return {
-    getState,
-    setState,
-    updateArray,
-    removeFromArray,
+    init,
+    get,
+    set,
+    update,
     subscribe,
-    updateEstadisticas,
-    addNotification,
-    removeNotification,
-    reset
+    addAuditLog,
+    clear,
   };
 })();
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = StateManager;
+// Auto-initialize
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', StateManager.init);
+} else {
+  StateManager.init();
 }
