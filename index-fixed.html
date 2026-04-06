@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OmniStock FTTH — Sistema de Gestión de Inventario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #080c12;
+    --bg-panel: rgba(12, 18, 28, 0.85);
+    --bg-glass: rgba(255,255,255,0.04);
+    --border-glass: rgba(255,255,255,0.08);
+    --cyan: #00e5ff;
+    --cyan-dim: rgba(0,229,255,0.15);
+    --emerald: #00ffa3;
+    --emerald-dim: rgba(0,255,163,0.12);
+    --red: #ff3b6b;
+    --red-dim: rgba(255,59,107,0.15);
+    --amber: #ffb020;
+    --amber-dim: rgba(255,176,32,0.15);
+    /* MEJORADO: Letras más claras - aumentado contraste */
+    --text-primary: #f5f5ff;
+    --text-muted: rgba(245,245,255,0.65);
+    --text-dim: rgba(245,245,255,0.45);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-base);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background noise + grid */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 10%, rgba(0,229,255,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 80%, rgba(0,255,163,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(255,59,107,0.03) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* Glass panel base */
+  .glass {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 16px;
+  }
+  .glass-strong {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 16px;
+  }
+
+  /* Glow effects */
+  .glow-cyan { box-shadow: 0 0 20px rgba(0,229,255,0.15), inset 0 0 20px rgba(0,229,255,0.03); }
+  .glow-emerald { box-shadow: 0 0 20px rgba(0,255,163,0.12), inset 0 0 20px rgba(0,255,163,0.03); }
+  .glow-red { box-shadow: 0 0 20px rgba(255,59,107,0.18), inset 0 0 20px rgba(255,59,107,0.04); }
+  .glow-amber { box-shadow: 0 0 15px rgba(255,176,32,0.15), inset 0 0 15px rgba(255,176,32,0.03); }
+
+  /* Typography */
+  .font-display { font-family: 'Syne', sans-serif; }
+  .font-mono { font-family: 'Space Mono', monospace; }
+
+  /* Neon text */
+  .text-cyan { color: var(--cyan); }
+  .text-emerald { color: var(--emerald); }
+  .text-red { color: var(--red); }
+  .text-amber { color: var(--amber); }
+  .text-muted { color: var(--text-muted); }
+
+  /* Badges */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 999px; font-size: 11px;
+    font-family: 'Space Mono', monospace; font-weight: 700; letter-spacing: 0.05em;
+  }
+  .badge-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,229,255,0.25); }
+  .badge-emerald { background: var(--emerald-dim); color: var(--emerald); border: 1px solid rgba(0,255,163,0.25); }
+  .badge-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,59,107,0.25); }
+  .badge-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,176,32,0.25); }
+
+  /* Progress bar */
+  .progress-track {
+    height: 4px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden;
+  }
+  .progress-fill { height: 100%; border-radius: 99px; transition: width 1s ease; }
+  .fill-cyan { background: linear-gradient(90deg, var(--cyan), rgba(0,229,255,0.4)); }
+  .fill-emerald { background: linear-gradient(90deg, var(--emerald), rgba(0,255,163,0.4)); }
+  .fill-red { background: linear-gradient(90deg, var(--red), rgba(255,59,107,0.4)); }
+  .fill-amber { background: linear-gradient(90deg, var(--amber), rgba(255,176,32,0.4)); }
+
+  /* Dot indicator */
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .dot-cyan { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+  .dot-emerald { background: var(--emerald); box-shadow: 0 0 8px var(--emerald); }
+  .dot-red { background: var(--red); box-shadow: 0 0 8px var(--red); animation: blink 1.4s ease-in-out infinite; }
+  .dot-amber { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* Sidebar */
+  #sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 68px; z-index: 100;
+    background: rgba(8,12,18,0.92);
+    border-right: 1px solid var(--border-glass);
+    backdrop-filter: blur(20px);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px 0; gap: 8px;
+  }
+
+  .nav-logo {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--cyan), rgba(0,255,163,0.6));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px;
+    color: #080c12; margin-bottom: 20px;
+  }
+
+  .nav-btn {
+    width: 44px; height: 44px; border-radius: 12px; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; color: var(--text-muted); transition: all 0.2s;
+    font-size: 18px; position: relative;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--bg-glass); color: var(--cyan);
+    border: 1px solid rgba(0,229,255,0.2);
+    box-shadow: 0 0 12px rgba(0,229,255,0.1);
+  }
+  .nav-btn.active::before {
+    content: ''; position: absolute; left: -2px; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 24px; background: var(--cyan); border-radius: 0 3px 3px 0;
+    box-shadow: 0 0 8px var(--cyan);
+  }
+
+  /* Main layout */
+  #main {
+    margin-left: 68px;
+    padding: 24px;
+    position: relative; z-index: 1;
+    min-height: 100vh;
+  }
+
+  /* Topbar */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  /* Bento grid */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+  }
+
+  .col-3 { grid-column: span 3; }
+  .col-4 { grid-column: span 4; }
+  .col-6 { grid-column: span 6; }
+  .col-8 { grid-column: span 8; }
+  .col-12 { grid-column: span 12; }
+
+  /* Stock card */
+  .stock-card {
+    padding: 22px; position: relative; overflow: hidden;
+  }
+  .stock-card::after {
+    content: ''; position: absolute; top: -30px; right: -30px;
+    width: 100px; height: 100px; border-radius: 50%;
+    opacity: 0.06; pointer-events: none;
+  }
+  .stock-card.cyan-card::after { background: var(--cyan); }
+  .stock-card.emerald-card::after { background: var(--emerald); }
+  .stock-card.red-card::after { background: var(--red); }
+  .stock-card.amber-card::after { background: var(--amber); }
+
+  /* Drop zone */
+  .drop-zone {
+    border: 2px dashed rgba(0,229,255,0.2); border-radius: 20px;
+    padding: 40px; text-align: center; cursor: pointer;
+    transition: all 0.3s; position: relative; overflow: hidden;
+    background: rgba(0,229,255,0.02);
+  }
+  .drop-zone:hover, .drop-zone.drag-over {
+    border-color: rgba(0,229,255,0.5);
+    background: rgba(0,229,255,0.05);
+    box-shadow: 0 0 30px rgba(0,229,255,0.08);
+  }
+
+  /* Table */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    text-align: left; padding: 10px 14px;
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-dim); font-family: 'Space Mono', monospace;
+    border-bottom: 1px solid var(--border-glass);
+  }
+  .data-table td {
+    padding: 12px 14px; font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* Tab system */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+  .tab-btn {
+    padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer;
+    font-size: 12px; font-family: 'Space Mono', monospace; transition: all 0.2s;
+    background: transparent; color: var(--text-muted);
+  }
+  .tab-btn.active {
+    background: rgba(0,229,255,0.1); color: var(--cyan);
+    border: 1px solid rgba(0,229,255,0.2);
+  }
+
+  /* Scroll */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.5s ease forwards; }
+  .delay-1 { animation-delay: 0.05s; opacity: 0; }
+  .delay-2 { animation-delay: 0.1s; opacity: 0; }
+  .delay-3 { animation-delay: 0.15s; opacity: 0; }
+  .delay-4 { animation-delay: 0.2s; opacity: 0; }
+
+  /* Page sections */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Notification */
+  #notif {
+    position: fixed; bottom: 24px; right: 24px; z-index: 300;
+    min-width: 260px; padding: 14px 18px; border-radius: 12px;
+    background: rgba(12,18,28,0.95); border: 1px solid rgba(0,229,255,0.25);
+    font-size: 13px; box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(0,229,255,0.1);
+    transform: translateY(80px); opacity: 0; transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  #notif.show { transform: translateY(0); opacity: 1; }
+
+  /* Tecnico avatar */
+  .tecnico-avatar {
+    width: 32px; height: 32px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 13px;
+    font-weight: 700; font-family: 'Syne', sans-serif;
+    background: linear-gradient(135deg, var(--cyan-dim), var(--emerald-dim));
+    border: 1px solid rgba(0,229,255,0.2); flex-shrink: 0;
+  }
+
+  /* Status pill */
+  .status-ok { color: var(--emerald); background: var(--emerald-dim); }
+  .status-warn { color: var(--amber); background: var(--amber-dim); }
+  .status-crit { color: var(--red); background: var(--red-dim); }
+
+  /* Chip */
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 6px; font-size: 11px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Alert item */
+  .alert-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+  }
+
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="nav-logo">OS</div>
+  <button class="nav-btn active" onclick="showPage('dashboard')" title="Dashboard">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+  </button>
+  <button class="nav-btn" onclick="showPage('movimientos')" title="Movimientos">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M7 16V4m0 0L4 7m3-3 3 3M17 8v12m0 0 3-3m-3 3-3-3"/></svg>
+  </button>
+  <button class="nav-btn" onclick="showPage('alertas')" title="Alertas" style="margin-top:auto">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <span style="position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red)"></span>
+  </button>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar fade-up delay-1">
+    <div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px">
+        <h1 class="font-display" style="font-size:22px;font-weight:800;letter-spacing:-0.02em">OmniStock <span class="text-cyan">FTTH</span></h1>
+        <span class="badge badge-cyan">
+          <span class="dot dot-cyan"></span> LIVE
+        </span>
+      </div>
+      <p class="text-muted" style="font-size:12px">Sistema de Gestión de Inventario · Express Salta</p>
+    </div>
+  </div>
+
+  <!-- ==================== DASHBOARD ==================== -->
+  <div id="page-dashboard" class="page active">
+
+    <!-- Main content row -->
+    <div class="bento">
+
+      <!-- Inventario principal -->
+      <div class="glass col-8 fade-up delay-2" style="padding:24px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <div>
+            <h2 class="font-display" style="font-size:16px;font-weight:700;margin-bottom:4px">Inventario de Materiales</h2>
+            <p class="text-muted" style="font-size:12px">Valores en tiempo real · Actualizado ahora</p>
+          </div>
+          <div class="tabs" style="margin-bottom:0">
+            <button class="tab-btn active" onclick="filterTable('todos', this)">Todos</button>
+            <button class="tab-btn" onclick="filterTable('nodo', this)">Nodo</button>
+            <button class="tab-btn" onclick="filterTable('inst', this)">Instalación</button>
+          </div>
+        </div>
+        <table class="data-table" id="main-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Material</th>
+              <th>Categoría</th>
+              <th>Stock</th>
+              <th>Mínimo</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Panel lateral: Alertas -->
+      <div class="col-4 fade-up delay-3" style="display:flex;flex-direction:column;gap:16px">
+        <!-- Alertas críticas -->
+        <div class="glass" style="padding:22px;flex:1">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 class="font-display" style="font-size:14px;font-weight:700">Alertas Críticas</h3>
+            <span class="badge badge-red" id="alertas-count">5 activas</span>
+          </div>
+          <div id="alertas-panel" style="display:flex;flex-direction:column;gap:8px">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MOVIMIENTOS ==================== -->
+  <div id="page-movimientos" class="page">
+    <div class="bento">
+      <div class="col-12 fade-up delay-1">
+        <h2 class="font-display" style="font-size:20px;font-weight:800;margin-bottom:6px">Últimos <span class="text-cyan">Movimientos</span></h2>
+        <p class="text-muted" style="font-size:13px;margin-bottom:24px">Historial de cambios en el inventario</p>
+      </div>
+
+      <div class="col-12 glass fade-up delay-2" style="padding:24px">
+        <div id="movimientos-log" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ALERTAS ==================== -->
+  <div id="page-alertas" class="page">
+    <div class="bento">
+      <div class="col-12 fade-up delay-1">
+        <h2 class="font-display" style="font-size:20px;font-weight:800;margin-bottom:6px">Panel de <span class="text-red">Alertas</span></h2>
+        <p class="text-muted" style="font-size:13px;margin-bottom:24px">Materiales bajo mínimo y críticos</p>
+      </div>
+
+      <div class="col-12 glass fade-up delay-2" style="padding:24px">
+        <div id="alertas-full" style="display:flex;flex-direction:column;gap:12px">
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- NOTIFICATION -->
+<div id="notif" style="display:flex;align-items:center;gap:10px">
+  <span id="notif-icon" style="font-size:16px"></span>
+  <span id="notif-msg"></span>
+</div>
+
+<script>
+// ===== DATA =====
+const stockData = [
+  { codigo:'120204', material:'Morseto de 3 bulones', cat:'nodo', stock:142, min:50, unidad:'u' },
+  { codigo:'120211', material:'Grampas marineras 3/8"', cat:'nodo', stock:89, min:40, unidad:'u' },
+  { codigo:'120225', material:'Retenciones preformadas', cat:'nodo', stock:63, min:30, unidad:'u' },
+  { codigo:'120232', material:'Suspensores de acero', cat:'nodo', stock:48, min:30, unidad:'u' },
+  { codigo:'120240', material:'Flejes de acero 19mm', cat:'nodo', stock:31, min:50, unidad:'u' },
+  { codigo:'120241', material:'Hebillas flejes', cat:'nodo', stock:31, min:50, unidad:'u' },
+  { codigo:'210010', material:'Cajas NAP 70/30', cat:'nodo', stock:4, min:20, unidad:'u' },
+  { codigo:'210015', material:'Cajas NAP Final', cat:'nodo', stock:12, min:15, unidad:'u' },
+  { codigo:'297030', material:'Cable Drop precon. 30m', cat:'inst', stock:18, min:50, unidad:'u' },
+  { codigo:'297050', material:'Cable Drop precon. 50m', cat:'inst', stock:34, min:30, unidad:'u' },
+  { codigo:'297100', material:'Cable Drop precon. 100m', cat:'inst', stock:21, min:20, unidad:'u' },
+  { codigo:'297200', material:'Cable Drop precon. 200m', cat:'inst', stock:8, min:10, unidad:'u' },
+  { codigo:'310001', material:'Rosetas ópticas SC/APC', cat:'inst', stock:156, min:80, unidad:'u' },
+  { codigo:'310010', material:'Patchcords SC/APC 1m', cat:'inst', stock:92, min:60, unidad:'u' },
+  { codigo:'310020', material:'Conectores de campo', cat:'inst', stock:203, min:100, unidad:'u' },
+  { codigo:'310030', material:'Precintos negros 200mm', cat:'inst', stock:580, min:200, unidad:'u' },
+  { codigo:'410001', material:'ONU Huawei HG8310', cat:'inst', stock:24, min:20, unidad:'u' },
+  { codigo:'410010', material:'Modem WIFI GPON', cat:'inst', stock:17, min:15, unidad:'u' },
+  { codigo:'410020', material:'STB HD', cat:'inst', stock:9, min:10, unidad:'u' },
+];
+
+const movimientos = [
+  { tipo:'+', desc:'Remito Ingreso #2241', detalle:'42u Patchcords · 80u Rosetas', cuando:'hace 10 min', badge:'ingreso' },
+  { tipo:'-', desc:'Certif. NODO SURESTE 30', detalle:'18u NAP · 145u Herrajes', cuando:'hace 2 hs', badge:'certif' },
+  { tipo:'-', desc:'Consumo Instalaciones', detalle:'Técnico Rodríguez · 8 altas', cuando:'hace 3 hs', badge:'consumo' },
+  { tipo:'+', desc:'Logística Inversa', detalle:'3x ONU recuperada · Apto reuso', cuando:'ayer 18:30', badge:'logistica' },
+];
+
+const alertasData = [
+  { nivel:'crit', material:'Cable Drop precon. 30m (297030)', stock:18, min:50, accion:'Solicitar compra urgente' },
+  { nivel:'crit', material:'Cajas NAP 70/30 (210010)', stock:4, min:20, accion:'Verificar remito pendiente' },
+  { nivel:'warn', material:'Flejes de acero (120240)', stock:31, min:50, accion:'Incluir en próximo pedido' },
+  { nivel:'warn', material:'Hebillas flejes (120241)', stock:31, min:50, accion:'Incluir en próximo pedido' },
+  { nivel:'warn', material:'STB HD (410020)', stock:9, min:10, accion:'Verificar disponibilidad' },
+];
+
+// ===== RENDER FUNCTIONS =====
+
+function getEstadoClass(stock, min) {
+  const ratio = stock / min;
+  if (ratio < 0.5) return 'status-crit';
+  if (ratio < 1) return 'status-warn';
+  return 'status-ok';
+}
+
+function getEstadoLabel(stock, min) {
+  const ratio = stock / min;
+  if (ratio < 0.5) return 'CRÍTICO';
+  if (ratio < 1) return 'BAJO';
+  return 'OK';
+}
+
+let currentFilter = 'todos';
+
+function renderTable(filter) {
+  const data = filter === 'todos' ? stockData : stockData.filter(d => d.cat === filter);
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = data.map(d => `
+    <tr>
+      <td><span class="font-mono" style="font-size:12px;color:var(--text-muted)">${d.codigo}</span></td>
+      <td style="font-weight:500;color:var(--text-primary)">${d.material}</td>
+      <td><span class="badge ${d.cat==='nodo'?'badge-cyan':'badge-emerald'}" style="font-size:10px">${d.cat.toUpperCase()}</span></td>
+      <td><span class="font-mono" style="font-size:15px;font-weight:700;color:${d.stock<d.min?'var(--red)':'var(--text-primary)'}">${d.stock}</span> <span style="font-size:11px;color:var(--text-muted)">${d.unidad}</span></td>
+      <td><span class="font-mono" style="font-size:12px;color:var(--text-muted)">${d.min} ${d.unidad}</span></td>
+      <td><span class="chip ${getEstadoClass(d.stock,d.min)}" style="font-size:10px;padding:4px 10px;border-radius:5px">${getEstadoLabel(d.stock,d.min)}</span></td>
+    </tr>
+  `).join('');
+}
+
+function filterTable(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable(f);
+}
+
+function renderMovimientos() {
+  const colors = { ingreso:'var(--cyan)', certif:'var(--red)', consumo:'var(--red)', logistica:'var(--amber)' };
+  const icons = { ingreso:'↑', certif:'↓', consumo:'↓', logistica:'↑' };
+  document.getElementById('movimientos-log').innerHTML = movimientos.map(m => `
+    <div class="glass" style="padding:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="width:28px;height:28px;border-radius:8px;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:${colors[m.badge]}">${icons[m.badge]}</span>
+        <span style="font-size:11px;font-family:'Space Mono',monospace;color:${colors[m.badge]}">${m.tipo === '+' ? 'SUMA' : 'RESTA'}</span>
+      </div>
+      <p style="font-size:13px;font-weight:600;margin-bottom:4px;color:var(--text-primary)">${m.desc}</p>
+      <p style="font-size:11px;color:var(--text-muted);margin-bottom:10px">${m.detalle}</p>
+      <p style="font-size:10px;color:var(--text-dim);font-family:'Space Mono',monospace">${m.cuando}</p>
+    </div>
+  `).join('');
+}
+
+function renderAlertas() {
+  const alertasPanel = document.getElementById('alertas-panel');
+  const alertasFull = document.getElementById('alertas-full');
+
+  const alertasHTML = alertasData.map(a => `
+    <div class="glass alert-item" style="padding:16px;border-left:3px solid ${a.nivel==='crit'?'var(--red)':'var(--amber)'}">
+      <span class="dot ${a.nivel==='crit'?'dot-red':'dot-amber'}" style="flex-shrink:0"></span>
+      <div style="flex:1">
+        <p style="font-size:12px;font-weight:600;margin-bottom:4px;color:var(--text-primary)">${a.material}</p>
+        <p style="font-size:11px;color:var(--text-muted)">
+          Stock: <strong style="color:${a.nivel==='crit'?'var(--red)':'var(--amber)'}">${a.stock}</strong> ·
+          Mín: <strong>${a.min}</strong>
+        </p>
+        <p style="font-size:10px;color:var(--text-dim);margin-top:4px">${a.accion}</p>
+      </div>
+      <span class="badge ${a.nivel==='crit'?'badge-red':'badge-amber'}">${a.nivel==='crit'?'CRÍTICO':'BAJO'}</span>
+    </div>
+  `).join('');
+
+  if(alertasPanel) alertasPanel.innerHTML = alertasHTML;
+  if(alertasFull) alertasFull.innerHTML = alertasHTML;
+}
+
+// ===== INTERACTIVITY =====
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const btns = { dashboard:0, movimientos:1, alertas:2 };
+  document.querySelectorAll('.nav-btn')[btns[page]]?.classList.add('active');
+}
+
+function showNotif(msg, icon='✓') {
+  const n = document.getElementById('notif');
+  document.getElementById('notif-msg').textContent = msg;
+  document.getElementById('notif-icon').textContent = icon;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 3500);
+}
+
+// ===== INIT =====
+renderTable('todos');
+renderMovimientos();
+renderAlertas();
+
+</script>
+
+</body>
+</html>
