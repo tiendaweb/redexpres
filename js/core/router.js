@@ -1,107 +1,133 @@
 /**
- * Router - Sistema de enrutamiento SPA
- * Maneja navegación entre páginas sin recargar
+ * Router
+ * Handles navigation between application pages/modules
  */
-
 const Router = (() => {
-  const routes = {};
+  const routes = {
+    dashboard: { name: 'Dashboard', index: 0 },
+    movimientos: { name: 'Movimientos', index: 1 },
+    fibra: { name: 'Fibra Óptica', index: 2 },
+    tecnicos: { name: 'Técnicos', index: 3 },
+    alertas: { name: 'Alertas', index: 4 },
+  };
+
   let currentRoute = 'dashboard';
-  const CONTAINER_ID = 'app-content';
+  let listeners = [];
 
-  // Registrar ruta
-  const register = (ruta, modulo) => {
-    routes[ruta] = modulo;
-  };
-
-  // Navegar a ruta
-  const navigate = (ruta) => {
-    if (!routes[ruta]) {
-      console.error(`Ruta no encontrada: ${ruta}`);
-      return;
+  /**
+   * Navigate to a route
+   * @param {string} routeName - Name of the route
+   */
+  const navigate = (routeName) => {
+    if (!routes[routeName]) {
+      console.warn(`Route ${routeName} not found`);
+      return false;
     }
 
-    currentRoute = ruta;
+    currentRoute = routeName;
+    StateManager.set('currentPage', routeName);
 
-    // Actualizar URL
-    window.history.pushState({ ruta }, '', `#${ruta}`);
+    // Update UI
+    updateActiveNavButton();
+    updateActivePage();
 
-    // Actualizar sidebar activo
-    document.querySelectorAll('.sidebar-item').forEach(item => {
-      item.classList.remove('active');
-      if (item.dataset.route === ruta) {
-        item.classList.add('active');
-      }
+    // Notify listeners
+    notify(routeName);
+
+    // Log action
+    StateManager.addAuditLog('page_navigation', { from: currentRoute, to: routeName });
+
+    return true;
+  };
+
+  /**
+   * Get current route
+   */
+  const getCurrentRoute = () => currentRoute;
+
+  /**
+   * Get all available routes
+   */
+  const getRoutes = () => Object.keys(routes);
+
+  /**
+   * Update active page display
+   */
+  const updateActivePage = () => {
+    document.querySelectorAll('[data-page]').forEach(page => {
+      page.classList.toggle('active', page.dataset.page === currentRoute);
     });
 
-    // Cargar módulo
-    const modulo = routes[ruta];
-    const container = document.getElementById(CONTAINER_ID);
-
-    if (container && modulo) {
-      // Clear old content
-      container.innerHTML = '';
-
-      // Mostrar loading
-      container.innerHTML = '<div class="flex-center" style="height: 400px;"><div class="spinner-lg"></div></div>';
-
-      // Cargar módulo
-      setTimeout(() => {
-        if (modulo.render && typeof modulo.render === 'function') {
-          container.innerHTML = '';
-          modulo.render(container);
-        } else if (typeof modulo === 'function') {
-          container.innerHTML = '';
-          modulo(container);
-        }
-
-        // Trigger evento
-        window.dispatchEvent(new CustomEvent('route-changed', { detail: { ruta } }));
-
-        // Scroll to top
-        window.scrollTo(0, 0);
-      }, 100);
+    // Fallback for old style pages
+    document.querySelectorAll('.page').forEach(page => {
+      page.classList.remove('active');
+    });
+    const activePage = document.getElementById(`page-${currentRoute}`);
+    if (activePage) {
+      activePage.classList.add('active');
     }
   };
 
-  // Obtener ruta actual
-  const getCurrent = () => currentRoute;
+  /**
+   * Update active navigation button
+   */
+  const updateActiveNavButton = () => {
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const route = routes[currentRoute];
 
-  // Manejar botones del navegador
-  const handlePopState = (event) => {
-    const ruta = event.state?.ruta || 'dashboard';
-    navigate(ruta);
+    navButtons.forEach((btn, index) => {
+      btn.classList.toggle('active', index === route.index);
+    });
   };
 
-  // Inicializar
+  /**
+   * Subscribe to route changes
+   */
+  const subscribe = (callback) => {
+    listeners.push(callback);
+    return () => {
+      listeners = listeners.filter(l => l !== callback);
+    };
+  };
+
+  /**
+   * Notify all listeners of route change
+   */
+  const notify = (newRoute) => {
+    listeners.forEach(listener => listener(newRoute));
+  };
+
+  /**
+   * Initialize router
+   */
   const init = () => {
-    window.addEventListener('popstate', handlePopState);
-
-    // Cargar ruta inicial
-    const hash = window.location.hash.slice(1) || 'dashboard';
-    if (routes[hash]) {
-      navigate(hash);
-    } else {
-      navigate('dashboard');
-    }
-
-    // Vincular clicks en sidebar
-    document.addEventListener('click', (e) => {
-      const item = e.target.closest('[data-route]');
-      if (item) {
-        e.preventDefault();
-        navigate(item.dataset.route);
-      }
+    // Bind navigation buttons
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach((btn, index) => {
+      btn.addEventListener('click', () => {
+        const routeName = Object.keys(routes)[index];
+        navigate(routeName);
+      });
     });
+
+    // Set initial route
+    updateActivePage();
   };
 
   return {
-    register,
     navigate,
-    getCurrent,
-    init
+    getCurrentRoute,
+    getRoutes,
+    subscribe,
+    init,
   };
 })();
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = Router;
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => Router.init(), 100);
+  });
+} else {
+  Router.init();
 }
