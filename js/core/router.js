@@ -13,6 +13,10 @@ const Router = (() => {
     fibra: { name: 'Fibra Óptica', index: 6 },
     tecnicos: { name: 'Técnicos', index: 7 },
     alertas: { name: 'Alertas', index: 8 },
+    'editar-materiales': { name: 'Editar Materiales', index: 9 },
+    'editar-tecnicos': { name: 'Editar Técnicos', index: 10 },
+    'editar-equipos': { name: 'Editar Equipos', index: 11 },
+    configuracion: { name: 'Configuración', index: 12 },
   };
 
   let currentRoute = 'dashboard';
