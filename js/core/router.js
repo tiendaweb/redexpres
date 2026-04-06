@@ -5,10 +5,14 @@
 const Router = (() => {
   const routes = {
     dashboard: { name: 'Dashboard', index: 0 },
-    movimientos: { name: 'Movimientos', index: 1 },
-    fibra: { name: 'Fibra Óptica', index: 2 },
-    tecnicos: { name: 'Técnicos', index: 3 },
-    alertas: { name: 'Alertas', index: 4 },
+    instalacion: { name: 'Instalación', index: 1 },
+    materiales: { name: 'Materiales', index: 2 },
+    certificacion: { name: 'Certificación', index: 3 },
+    existencias: { name: 'Existencias', index: 4 },
+    movimientos: { name: 'Movimientos', index: 5 },
+    fibra: { name: 'Fibra Óptica', index: 6 },
+    tecnicos: { name: 'Técnicos', index: 7 },
+    alertas: { name: 'Alertas', index: 8 },
   };
 
   let currentRoute = 'dashboard';

@@ -34,7 +34,7 @@ const InventarioModule = (() => {
 
                 return `
                   <tr style="border-bottom: 1px solid var(--border-secondary); transition: background var(--transition-fast);" onmouseenter="this.style.backgroundColor='var(--bg-hover)'" onmouseleave="this.style.backgroundColor='transparent'">
-                    <td style="padding: var(--spacing-md); font-family: 'Space Mono', monospace; color: var(--cyan);">${item.codigo}</td>
+                    <td style="padding: var(--spacing-md); font-family: var(--font-mono); color: var(--cyan);">${item.codigo}</td>
                     <td style="padding: var(--spacing-md);">${item.material}</td>
                     <td style="padding: var(--spacing-md); text-align: center;"><strong>${item.stock}</strong></td>
                     <td style="padding: var(--spacing-md); text-align: center;">${item.stockMinimo}</td>

@@ -1,0 +1,8 @@
+{
+  "tecnicosData": [
+    { "id": 1, "nombre": "Rodríguez J.", "telefono": "+54 9 387 123-4567", "equipoAsignado": 3, "estado": "activo" },
+    { "id": 2, "nombre": "González M.", "telefono": "+54 9 387 234-5678", "equipoAsignado": 2, "estado": "activo" },
+    { "id": 3, "nombre": "López R.", "telefono": "+54 9 387 345-6789", "equipoAsignado": 4, "estado": "activo" },
+    { "id": 4, "nombre": "Martínez A.", "telefono": "+54 9 387 456-7890", "equipoAsignado": 2, "estado": "inactivo" }
+  ]
+}

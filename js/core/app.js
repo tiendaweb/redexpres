@@ -6,6 +6,10 @@
 const OmniStockApp = (() => {
   const modules = {
     dashboard: DashboardModule,
+    instalacion: InstalacionModule,
+    materiales: MaterialesModule,
+    certificacion: CertificacionModule,
+    existencias: ExistenciasModule,
     movimientos: MovimientosModule,
     fibra: FibraModule,
     tecnicos: TecnicosModule,
@@ -49,7 +53,7 @@ const OmniStockApp = (() => {
   const setupModuleRouting = () => {
     // Bind navigation buttons to modules
     const navButtons = document.querySelectorAll('.nav-btn');
-    const moduleOrder = ['dashboard', 'movimientos', 'fibra', 'tecnicos', 'alertas'];
+    const moduleOrder = ['dashboard', 'instalacion', 'materiales', 'certificacion', 'existencias', 'movimientos', 'fibra', 'tecnicos', 'alertas'];
 
     navButtons.forEach((btn, index) => {
       btn.addEventListener('click', () => {

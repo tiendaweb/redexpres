@@ -1,5 +1,5 @@
 /* ===== FONTS ===== */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 /* ===== DARK MODE (DEFAULT) ===== */
 :root,
@@ -71,9 +71,9 @@
 /* ===== TYPOGRAPHY ===== */
 :root {
   /* Font Families */
-  --font-display: 'Syne', sans-serif;
+  --font-display: 'Poppins', sans-serif;
   --font-body: 'Poppins', sans-serif;
-  --font-mono: 'Space Mono', monospace;
+  --font-mono: 'Poppins', sans-serif;
 
   /* Font Sizes */
   --font-size-xs: 11px;

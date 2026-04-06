@@ -1,0 +1,7 @@
+{
+  "consumoFibraHistory": [
+    { "tecnico": "Rodríguez J.", "nodo": "NODO-15", "fecha": "2024-01-15", "desde": "100m", "hasta": "150m", "consumo": "50m", "tipo": "F.O. 12" },
+    { "tecnico": "González M.", "nodo": "NODO-22", "fecha": "2024-01-14", "desde": "200m", "hasta": "280m", "consumo": "80m", "tipo": "F.O. 24" },
+    { "tecnico": "López R.", "nodo": "NODO-08", "fecha": "2024-01-13", "desde": "50m", "hasta": "120m", "consumo": "70m", "tipo": "F.O. 12" }
+  ]
+}

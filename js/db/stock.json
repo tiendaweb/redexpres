@@ -1,0 +1,23 @@
+{
+  "stockData": [
+    { "codigo": "120204", "material": "Morseto de 3 bulones", "cat": "nodo", "stock": 142, "min": 50, "unidad": "u" },
+    { "codigo": "120211", "material": "Grampas marineras 3/8\"", "cat": "nodo", "stock": 89, "min": 40, "unidad": "u" },
+    { "codigo": "120225", "material": "Retenciones preformadas", "cat": "nodo", "stock": 63, "min": 30, "unidad": "u" },
+    { "codigo": "120232", "material": "Suspensores de acero", "cat": "nodo", "stock": 48, "min": 30, "unidad": "u" },
+    { "codigo": "120240", "material": "Flejes de acero 19mm", "cat": "nodo", "stock": 31, "min": 50, "unidad": "u" },
+    { "codigo": "120241", "material": "Hebillas flejes", "cat": "nodo", "stock": 31, "min": 50, "unidad": "u" },
+    { "codigo": "210010", "material": "Cajas NAP 70/30", "cat": "nodo", "stock": 4, "min": 20, "unidad": "u" },
+    { "codigo": "210015", "material": "Cajas NAP Final", "cat": "nodo", "stock": 12, "min": 15, "unidad": "u" },
+    { "codigo": "297030", "material": "Cable Drop precon. 30m", "cat": "inst", "stock": 18, "min": 50, "unidad": "u" },
+    { "codigo": "297050", "material": "Cable Drop precon. 50m", "cat": "inst", "stock": 34, "min": 30, "unidad": "u" },
+    { "codigo": "297100", "material": "Cable Drop precon. 100m", "cat": "inst", "stock": 21, "min": 20, "unidad": "u" },
+    { "codigo": "297200", "material": "Cable Drop precon. 200m", "cat": "inst", "stock": 8, "min": 10, "unidad": "u" },
+    { "codigo": "310001", "material": "Rosetas ópticas SC/APC", "cat": "inst", "stock": 156, "min": 80, "unidad": "u" },
+    { "codigo": "310010", "material": "Patchcords SC/APC 1m", "cat": "inst", "stock": 92, "min": 60, "unidad": "u" },
+    { "codigo": "310020", "material": "Conectores de campo", "cat": "inst", "stock": 203, "min": 100, "unidad": "u" },
+    { "codigo": "310030", "material": "Precintos negros 200mm", "cat": "inst", "stock": 580, "min": 200, "unidad": "u" },
+    { "codigo": "410001", "material": "ONU Huawei HG8310", "cat": "inst", "stock": 24, "min": 20, "unidad": "u" },
+    { "codigo": "410010", "material": "Modem WIFI GPON", "cat": "inst", "stock": 17, "min": 15, "unidad": "u" },
+    { "codigo": "410020", "material": "STB HD", "cat": "inst", "stock": 9, "min": 10, "unidad": "u" }
+  ]
+}

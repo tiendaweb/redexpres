@@ -1,0 +1,8 @@
+{
+  "movimientos": [
+    { "tipo": "+", "desc": "Remito Ingreso #2241", "detalle": "42u Patchcords · 80u Rosetas", "cuando": "hace 10 min", "badge": "ingreso" },
+    { "tipo": "-", "desc": "Certif. NODO SURESTE 30", "detalle": "18u NAP · 145u Herrajes", "cuando": "hace 2 hs", "badge": "certif" },
+    { "tipo": "-", "desc": "Consumo Instalaciones", "detalle": "Técnico Rodríguez · 8 altas", "cuando": "hace 3 hs", "badge": "consumo" },
+    { "tipo": "+", "desc": "Logística Inversa", "detalle": "3x ONU recuperada · Apto reuso", "cuando": "ayer 18:30", "badge": "logistica" }
+  ]
+}

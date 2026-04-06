@@ -1,0 +1,9 @@
+{
+  "alertasData": [
+    { "nivel": "crit", "material": "Cable Drop precon. 30m (297030)", "stock": 18, "min": 50, "accion": "Solicitar compra urgente" },
+    { "nivel": "crit", "material": "Cajas NAP 70/30 (210010)", "stock": 4, "min": 20, "accion": "Verificar remito pendiente" },
+    { "nivel": "warn", "material": "Flejes de acero (120240)", "stock": 31, "min": 50, "accion": "Incluir en próximo pedido" },
+    { "nivel": "warn", "material": "Hebillas flejes (120241)", "stock": 31, "min": 50, "accion": "Incluir en próximo pedido" },
+    { "nivel": "warn", "material": "STB HD (410020)", "stock": 9, "min": 10, "accion": "Verificar disponibilidad" }
+  ]
+}

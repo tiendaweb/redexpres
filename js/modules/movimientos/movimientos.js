@@ -45,13 +45,13 @@ const MovimientosModule = (() => {
           <span style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0, 0, 0, 0.2); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: ${colors[m.badge]}">
             ${icons[m.badge]}
           </span>
-          <span style="font-size: 11px; font-family: 'Space Mono', monospace; color: ${colors[m.badge]}">
+          <span style="font-size: 11px; font-family: var(--font-mono); color: ${colors[m.badge]}">
             ${m.tipo === '+' ? 'SUMA' : 'RESTA'}
           </span>
         </div>
         <p style="font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--text-primary)">${m.desc}</p>
         <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px">${m.detalle}</p>
-        <p style="font-size: 10px; color: var(--text-dim); font-family: 'Space Mono', monospace">${m.cuando}</p>
+        <p style="font-size: 10px; color: var(--text-dim); font-family: var(--font-mono)">${m.cuando}</p>
       </div>
     `).join('');
 

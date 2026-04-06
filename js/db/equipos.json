@@ -1,0 +1,9 @@
+{
+  "equiposData": [
+    { "id": 1, "tecnico": "Rodríguez J.", "numeroSerie": "SN-001-2024", "modelo": "ONU HG8310", "estado": "activo", "cliente": "Cliente A", "orden": "ORD-2024-001" },
+    { "id": 2, "tecnico": "González M.", "numeroSerie": "SN-002-2024", "modelo": "Modem GPON", "estado": "activo", "cliente": "Cliente B", "orden": "ORD-2024-002" },
+    { "id": 3, "tecnico": "López R.", "numeroSerie": "SN-003-2024", "modelo": "STB HD", "estado": "activo", "cliente": "Cliente C", "orden": "ORD-2024-003" },
+    { "id": 4, "tecnico": "López R.", "numeroSerie": "SN-004-2024", "modelo": "ONU HG8310", "estado": "activo", "cliente": "Cliente D", "orden": "ORD-2024-004" },
+    { "id": 5, "tecnico": "Martínez A.", "numeroSerie": "SN-005-2024", "modelo": "Modem GPON", "estado": "devuelto", "cliente": "Cliente E", "orden": "ORD-2024-005" }
+  ]
+}

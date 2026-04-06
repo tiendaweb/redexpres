@@ -12,6 +12,18 @@ const StateManager = (() => {
       inventory: [],
       alerts: [],
     },
+    instalacion: {
+      filter: 'todos',
+    },
+    materiales: {
+      filter: 'todos',
+    },
+    certificacion: {
+      filter: 'todos',
+    },
+    existencias: {
+      activeTab: 'stock',
+    },
     movimientos: {
       history: [],
       filter: 'todos',

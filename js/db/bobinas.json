@@ -1,0 +1,7 @@
+{
+  "bobinasData": [
+    { "id": 1, "tipo": "F.O. 12 hilos", "estado": "Activa", "metros": 2400, "consumido": 840, "disponible": 1560, "porcentaje": 35 },
+    { "id": 2, "tipo": "F.O. 24 hilos", "estado": "Activa", "metros": 3600, "consumido": 1200, "disponible": 2400, "porcentaje": 33 },
+    { "id": 3, "tipo": "F.O. 12 hilos", "estado": "Reserva", "metros": 2400, "consumido": 0, "disponible": 2400, "porcentaje": 0 }
+  ]
+}

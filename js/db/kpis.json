@@ -1,0 +1,8 @@
+{
+  "kpisData": [
+    { "label": "Materiales en Stock", "valor": "3,240", "capacidad": 72, "color": "cyan", "unit": "ítems" },
+    { "label": "Consumibles", "valor": "2,341", "capacidad": 58, "color": "emerald", "unit": "ítems" },
+    { "label": "Stock en Calle", "valor": "183", "capacidad": 45, "color": "amber", "unit": "con 4 técnicos" },
+    { "label": "Alertas Críticas", "valor": "3", "capacidad": 100, "color": "red", "unit": "activas" }
+  ]
+}
