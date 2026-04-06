@@ -39,9 +39,21 @@
   <button class="nav-btn" onclick="Router.navigate('tecnicos')" title="Técnicos">
     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M16 11a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>
   </button>
-  <button class="nav-btn" onclick="Router.navigate('alertas')" title="Alertas" style="margin-top: auto">
+  <button class="nav-btn" onclick="Router.navigate('alertas')" title="Alertas">
     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     <span style="position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 6px var(--red)"></span>
+  </button>
+  <button class="nav-btn" onclick="Router.navigate('ingresos')" title="Ingresos" style="margin-top: auto">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2v20m-9-9h18M7 8l5-5 5 5M7 16l5 5 5-5"/></svg>
+  </button>
+  <button class="nav-btn" onclick="Router.navigate('egresos-nodo')" title="Egresos Nodo">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2l-8 8v11h5v-5h6v5h5V10L12 2M12 8a2 2 0 100-4 2 2 0 000 4z"/></svg>
+  </button>
+  <button class="nav-btn" onclick="Router.navigate('instalaciones')" title="Instalaciones">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M16 11a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM21 8l-4 4m4-4l-4-4m4 4h3"/></svg>
+  </button>
+  <button class="nav-btn" onclick="Router.navigate('desconexiones')" title="Desconexiones">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M2 8l4-4m-4 4l4 4M22 16l-4 4m4-4l-4-4"/></svg>
   </button>
   <button class="nav-btn" id="theme-toggle" title="Cambiar tema" style="margin-top: 12px">
     <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -101,6 +113,10 @@
 <script src="js/modules/fibra-optica/fibra.js"></script>
 <script src="js/modules/tecnicos/tecnicos.js"></script>
 <script src="js/modules/alertas/alertas.js"></script>
+<script src="js/modules/ingresos/ingresos.js"></script>
+<script src="js/modules/egresos-nodo/egresos-nodo.js"></script>
+<script src="js/modules/instalaciones/instalaciones.js"></script>
+<script src="js/modules/desconexiones/desconexiones.js"></script>
 
 <!-- APP INITIALIZER -->
 <script src="js/core/app.js"></script>
