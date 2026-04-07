@@ -13,6 +13,8 @@ const Router = (() => {
     'egresos-nodo': { name: 'Egresos Nodo', index: 6 },
     instalaciones: { name: 'Instalaciones', index: 7 },
     desconexiones: { name: 'Desconexiones', index: 8 },
+    presupuesto: { name: 'Presupuesto', index: 9 },
+    admin: { name: 'Admin', index: 10 },
   };
 
   let currentRoute = 'dashboard';
