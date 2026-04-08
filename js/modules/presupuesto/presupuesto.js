@@ -7,8 +7,8 @@ const PresupuestoModule = (() => {
   const packages = [
     {
       id: 'gestión-inventario',
-      title: 'Gestión de Inventario',
-      description: 'Control completo de stock, categorías y movimientos',
+      title: 'Núcleo de Inventario Maestro',
+      description: 'Base de datos centralizada para depósitos de Obra e Instalación. Alertas de stock crítico y buscador inteligente con IA',
       icon: '📦',
       features: [
         'Stock en tiempo real',
@@ -17,12 +17,12 @@ const PresupuestoModule = (() => {
         'Reportes automáticos'
       ],
       savings: 'Reduce 40% de tiempo en control',
-      price: 200000
+      price: 350000
     },
     {
       id: 'instalaciones',
       title: 'Gestión de Instalaciones',
-      description: 'Seguimiento completo de proyectos e instalaciones',
+      description: 'Balance de consumo técnico domiciliario. Trazabilidad por orden de servicio y material en calle',
       icon: '🏗️',
       features: [
         'Creación de órdenes',
@@ -31,12 +31,12 @@ const PresupuestoModule = (() => {
         'Seguimiento en vivo'
       ],
       savings: '60% más rápido que procesos manuales',
-      price: 200000
+      price: 180000
     },
     {
       id: 'tecnicos',
-      title: 'Gestión de Técnicos',
-      description: 'Administración de equipo técnico y asignaciones',
+      title: 'Logística de Obras & Nodos',
+      description: 'Procesamiento de certificaciones de obra (Nodos). Cálculo de tendido de fibra, herrajes y materiales de red',
       icon: '👨‍🔧',
       features: [
         'Perfiles de técnicos',
@@ -45,12 +45,12 @@ const PresupuestoModule = (() => {
         'Historial de trabajos'
       ],
       savings: 'Optimiza rutas en 50%',
-      price: 200000
+      price: 180000
     },
     {
       id: 'movimientos',
-      title: 'Control de Movimientos',
-      description: 'Trazabilidad completa de todos los materiales',
+      title: 'Bajas & Recupero de Equipos',
+      description: 'Módulo de logística inversa para desconexiones. Control de números de serie y estado de equipos recuperados',
       icon: '↔️',
       features: [
         'Ingresos y egresos',
@@ -59,12 +59,12 @@ const PresupuestoModule = (() => {
         'Reportes detallados'
       ],
       savings: 'Trazabilidad en tiempo real',
-      price: 200000
+      price: 180000
     },
     {
       id: 'alertas',
-      title: 'Alertas & Reportes',
-      description: 'Sistema de alertas y reportes inteligentes',
+      title: 'Escaneo Inteligente con IA',
+      description: 'Módulo con Inteligencia Artificial para lectura automática de remitos y PDF. Incluye acceso a API con tokens mensuales',
       icon: '🔔',
       features: [
         'Alertas en tiempo real',
@@ -73,7 +73,7 @@ const PresupuestoModule = (() => {
         'Exportación en múltiples formatos'
       ],
       savings: 'Prevención de problemas 100%',
-      price: 200000
+      price: 180000
     }
   ];
 
@@ -263,8 +263,9 @@ const PresupuestoModule = (() => {
 
   const updatePricing = () => {
     const selectedPkgs = Array.from(selectedPackages);
-    const totalPagoUnico = selectedPkgs.length * 200000;
-    const totalSuscripcion = 400000 + (selectedPkgs.length * 100000);
+    const selectedPackageObjs = packages.filter(pkg => selectedPkgs.includes(pkg.id));
+    const totalPagoUnico = selectedPackageObjs.reduce((sum, pkg) => sum + pkg.price, 0);
+    const totalSuscripcion = 400000 + selectedPackageObjs.reduce((sum, pkg) => sum + (pkg.price / 2), 0);
 
     const totalUnicoEl = document.getElementById('total-pago-unico');
     const totalSuscripcionEl = document.getElementById('total-suscripcion');
