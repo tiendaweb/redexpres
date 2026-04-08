@@ -1,7 +1,21 @@
 /* ============================================
    ICONS STYLING
-   Bootstrap Icons CDN Customization
+   Lucide & Bootstrap Icons Customization
    ============================================ */
+
+/* Lucide Icons base styling */
+[data-lucide] {
+  display: inline-block;
+  vertical-align: -0.125em;
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  transition: all var(--transition-fast);
+}
 
 /* Icon base styling */
 .bi {
