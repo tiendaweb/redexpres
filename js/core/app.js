@@ -53,13 +53,15 @@ const OmniStockApp = (() => {
 
   const setupModuleRouting = () => {
     // Bind navigation buttons to modules
-    const navButtons = document.querySelectorAll('.nav-btn');
+    const navButtons = document.querySelectorAll('.nav-btn:not(#theme-toggle)');
     const moduleOrder = ['dashboard', 'movimientos', 'fibra', 'tecnicos', 'alertas', 'ingresos', 'egresos-nodo', 'instalaciones', 'desconexiones'];
 
     navButtons.forEach((btn, index) => {
       btn.addEventListener('click', () => {
         const moduleName = moduleOrder[index];
-        Router.navigate(moduleName);
+        if (moduleName) {
+          Router.navigate(moduleName);
+        }
       });
     });
   };
