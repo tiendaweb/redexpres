@@ -147,11 +147,28 @@
 <!-- APP INITIALIZER -->
 <script src="js/core/app.js"></script>
 
-<!-- Initialize Lucide Icons -->
+<!-- Initialize Lucide Icons and Sidebar -->
 <script>
-  if (window.lucide) {
-    lucide.createIcons();
+  // Initialize Lucide Icons
+  function initLucideIcons() {
+    if (window.lucide && typeof lucide.createIcons === 'function') {
+      try {
+        lucide.createIcons();
+      } catch (e) {
+        console.warn('Lucide icons initialization:', e);
+      }
+    }
   }
+
+  // Ensure icons are loaded when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLucideIcons);
+  } else {
+    initLucideIcons();
+  }
+
+  // Reinitialize icons after a brief delay to ensure they're rendered
+  setTimeout(initLucideIcons, 100);
 
   // Sidebar toggle functionality
   function toggleSidebar() {
@@ -163,6 +180,9 @@
     } else {
       sidebar.classList.toggle('expanded');
     }
+
+    // Reinitialize icons if they changed
+    setTimeout(initLucideIcons, 150);
   }
 
   // Close sidebar when clicking nav buttons on mobile
