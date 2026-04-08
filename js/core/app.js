@@ -14,10 +14,11 @@ const OmniStockApp = (() => {
     'egresos-nodo': EgresosNodoModule,
     instalaciones: InstalacionesModule,
     desconexiones: DesconexionesModule,
+    presupuesto: PresupuestoModule,
   };
 
   const init = () => {
-    console.log('🚀 Initializing OmniStock FTTH Application...');
+    console.log('🚀 Initializing ADMIN EXPRESS Application...');
 
     // Initialize core systems
     ThemeManager.init();
@@ -38,7 +39,7 @@ const OmniStockApp = (() => {
       renderModule(route);
     });
 
-    console.log('✅ OmniStock initialized successfully');
+    console.log('✅ ADMIN EXPRESS initialized successfully');
   };
 
   const setupThemeToggle = () => {
